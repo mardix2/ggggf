@@ -31,11 +31,6 @@ public final class Fx {
         world.spawnParticles(particle, pos.x, pos.y, pos.z, count, spread, spread, spread, speed);
     }
 
-    /** Одна частица с заданной скоростью (count = 0 включает режим «скорость как вектор»). */
-    public static void directed(ServerWorld world, Vec3d pos, ParticleEffect particle, Vec3d velocity) {
-        world.spawnParticles(particle, pos.x, pos.y, pos.z, 0, velocity.x, velocity.y, velocity.z, 1.0);
-    }
-
     /** Горизонтальное кольцо — базовый «след» площадных заклинаний. */
     public static void ring(ServerWorld world, Vec3d center, double radius,
                             ParticleEffect particle, int points) {

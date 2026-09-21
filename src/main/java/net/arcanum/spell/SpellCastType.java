@@ -36,6 +36,6 @@ public enum SpellCastType {
     }
 
     public Text displayName() {
-        return Text.translatable("casttype.arcanum." + name);
+        return Text.translatable("casttype.arcanum." + asString());
     }
 }

@@ -84,7 +84,7 @@ public final class SummonManager {
         return mob;
     }
 
-    public static void register(MobEntity mob, ServerPlayerEntity owner, int lifetimeTicks) {
+    private static void register(MobEntity mob, ServerPlayerEntity owner, int lifetimeTicks) {
         ACTIVE.add(new Summon(mob.getUuid(), owner.getUuid(), mob.getWorld().getRegistryKey(),
                 mob.getWorld().getTime() + lifetimeTicks));
         OWNERS.put(mob.getUuid(), owner.getUuid());

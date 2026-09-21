@@ -211,6 +211,8 @@
   "message.arcanum.attunement_up": "Максимум маны теперь %s",
   "message.arcanum.growth": "Растений пробуждено: %s",
   "message.arcanum.dispelled": "Развеяно призванных: %s",
+  "message.arcanum.no_infusions": "Обряды алтаря не загружены",
+  "message.arcanum.infusion_requires": "  [постаментов: %s, маны: %s]",
   "message.arcanum.learned_all": "Изучены все заклинания (%s)",
   "message.arcanum.unknown_spell": "Неизвестное заклинание: %s",
   "message.arcanum.cast.no_spell": "Сначала выберите заклинание",

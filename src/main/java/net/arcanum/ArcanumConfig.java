@@ -30,7 +30,4 @@ public final class ArcanumConfig {
     public static final double ALTAR_RADIUS = 3.0;
     /** Длительность ритуала на алтаре в тиках. */
     public static final int ALTAR_RITUAL_TICKS = 60;
-
-    /** Урон «в ядре» — все заклинания домножают на свои коэффициенты. */
-    public static final float DAMAGE_UNIT = 2.0f;
 }

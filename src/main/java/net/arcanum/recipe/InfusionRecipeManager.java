@@ -75,7 +75,7 @@ public final class InfusionRecipeManager implements SimpleSynchronousResourceRel
         return Optional.empty();
     }
 
-    /** Все загруженные рецепты — используется командой {@code /arcanum infusion}. */
+    /** Все загруженные обряды — их показывает команда {@code /arcanum infusion}. */
     public static List<InfusionRecipe> all() {
         return sorted;
     }

@@ -211,6 +211,8 @@
   "message.arcanum.attunement_up": "Max mana is now %s",
   "message.arcanum.growth": "Plants awakened: %s",
   "message.arcanum.dispelled": "Summons dispelled: %s",
+  "message.arcanum.no_infusions": "No infusion recipes are loaded",
+  "message.arcanum.infusion_requires": "  [pedestals: %s, mana: %s]",
   "message.arcanum.learned_all": "All %s spells learned",
   "message.arcanum.unknown_spell": "Unknown spell: %s",
   "message.arcanum.cast.no_spell": "Select a spell first",

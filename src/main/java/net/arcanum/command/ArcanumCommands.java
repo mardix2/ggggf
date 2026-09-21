@@ -9,6 +9,8 @@ import net.arcanum.ArcanumConfig;
 import net.arcanum.mana.ManaData;
 import net.arcanum.mana.ManaManager;
 import net.arcanum.net.ModNetworking;
+import net.arcanum.recipe.InfusionRecipe;
+import net.arcanum.recipe.InfusionRecipeManager;
 import net.arcanum.spell.Spell;
 import net.arcanum.spell.SpellRegistry;
 import net.arcanum.spell.SpellSchool;
@@ -18,6 +20,7 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -43,6 +46,7 @@ public final class ArcanumCommands {
         return CommandManager.literal("arcanum")
                 .then(CommandManager.literal("spells").executes(ArcanumCommands::listSpells))
                 .then(CommandManager.literal("known").executes(ArcanumCommands::listKnown))
+                .then(CommandManager.literal("infusion").executes(ArcanumCommands::listInfusions))
                 .then(CommandManager.literal("dispel").executes(ArcanumCommands::dispel))
                 .then(CommandManager.literal("mana")
                         .requires(source -> source.hasPermissionLevel(2))
@@ -83,6 +87,47 @@ public final class ArcanumCommands {
             }
         }
         return SpellRegistry.size();
+    }
+
+    /**
+     * Обряды алтаря: в игре их иначе никак не разглядеть — рецепты
+     * не попадают в ванильную книгу рецептов.
+     */
+    private static int listInfusions(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        List<InfusionRecipe> recipes = InfusionRecipeManager.all();
+        if (recipes.isEmpty()) {
+            source.sendFeedback(() -> Text.translatable("message.arcanum.no_infusions"), false);
+            return 0;
+        }
+
+        for (InfusionRecipe recipe : recipes) {
+            MutableText line = Text.literal(" • ")
+                    .append(recipe.result().toStack().getName().copy().formatted(Formatting.WHITE));
+            if (recipe.result().count() > 1) {
+                line.append(Text.literal(" x" + recipe.result().count()).formatted(Formatting.GRAY));
+            }
+            line.append(Text.literal(" ← ").formatted(Formatting.DARK_GRAY));
+
+            boolean first = true;
+            for (InfusionRecipe.Entry entry : recipe.inputs()) {
+                if (!first) {
+                    line.append(Text.literal(", ").formatted(Formatting.DARK_GRAY));
+                }
+                first = false;
+                line.append(entry.toStack().getName().copy().formatted(Formatting.GRAY));
+                if (entry.count() > 1) {
+                    line.append(Text.literal(" x" + entry.count()).formatted(Formatting.DARK_GRAY));
+                }
+            }
+
+            if (recipe.pedestals() > 0 || recipe.mana() > 0) {
+                line.append(Text.translatable("message.arcanum.infusion_requires",
+                        recipe.pedestals(), recipe.mana()).formatted(Formatting.DARK_AQUA));
+            }
+            source.sendFeedback(() -> line, false);
+        }
+        return recipes.size();
     }
 
     private static int listKnown(CommandContext<ServerCommandSource> context)
