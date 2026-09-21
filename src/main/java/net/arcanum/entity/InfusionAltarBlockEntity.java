@@ -1,14 +1,17 @@
 package net.arcanum.entity;
 
+import net.arcanum.Arcanum;
 import net.arcanum.ArcanumConfig;
 import net.arcanum.mana.ManaManager;
 import net.arcanum.recipe.InfusionRecipe;
 import net.arcanum.recipe.InfusionRecipeManager;
 import net.arcanum.registry.ModBlockEntities;
 import net.arcanum.registry.ModBlocks;
+import net.arcanum.item.WandItem;
 import net.arcanum.registry.ModComponents;
 import net.arcanum.spell.Spell;
 import net.arcanum.spell.SpellRegistry;
+import net.arcanum.spell.Augments;
 import net.arcanum.spell.SpellSchool;
 import net.arcanum.spell.util.Fx;
 import net.minecraft.block.BlockState;
@@ -93,6 +96,14 @@ public class InfusionAltarBlockEntity extends BlockEntity {
         }
 
         InfusionRecipe recipe = match.get();
+        if (recipe.requiresWand() && recipe.addAugment().isPresent()) {
+            ItemEntity wand = findWand(serverWorld);
+            if (wand == null || !Augments.hasFreeSlot(wand.getStack())) {
+                player.sendMessage(Text.translatable("message.arcanum.altar.no_slots")
+                        .formatted(Formatting.RED), true);
+                return ActionResult.FAIL;
+            }
+        }
         if (recipe.mana() > 0 && !ManaManager.consume(player, recipe.mana())) {
             player.sendMessage(Text.translatable("message.arcanum.altar.no_mana", recipe.mana())
                     .formatted(Formatting.RED), true);
@@ -159,8 +170,25 @@ public class InfusionAltarBlockEntity extends BlockEntity {
             return;
         }
 
+        ItemStack result;
+        if (recipe.requiresWand()) {
+            result = transformWand(serverWorld, recipe);
+            if (result == null) {
+                abort(serverWorld, center);
+                return;
+            }
+        } else {
+            result = recipe.result().toStack();
+        }
+
+        if (result.isEmpty()) {
+            // Обряд без результата — ошибка в датапаке; ингредиенты не трогаем.
+            Arcanum.LOGGER.warn("Обряд алтаря не дал результата, проверьте поле result");
+            abort(serverWorld, center);
+            return;
+        }
+
         consume(serverWorld, recipe);
-        ItemStack result = recipe.result().toStack();
         recipe.scrollSchool().ifPresent(school -> inscribe(serverWorld, result, school));
         ItemEntity drop = new ItemEntity(serverWorld, center.x, center.y + 0.6, center.z, result);
         drop.setVelocity(0.0, 0.15, 0.0);
@@ -170,6 +198,45 @@ public class InfusionAltarBlockEntity extends BlockEntity {
         Fx.sphere(serverWorld, center, 1.0, ParticleTypes.END_ROD, 40);
         Fx.sound(serverWorld, center, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.0f);
         reset();
+    }
+
+    /**
+     * Превращает брошенный посох: вплавляет руну или вынимает все разом.
+     *
+     * <p>Посох не «тратится», а заменяется собственной копией — иначе
+     * пропали бы уже впечатанные в него руны и выбранное название.
+     */
+    private ItemStack transformWand(ServerWorld serverWorld, InfusionRecipe recipe) {
+        ItemEntity entity = findWand(serverWorld);
+        if (entity == null) {
+            return null;
+        }
+        ItemStack wand = entity.getStack();
+        ItemStack result;
+        if (recipe.clearAugments()) {
+            result = Augments.cleared(wand);
+        } else if (recipe.addAugment().isPresent() && Augments.hasFreeSlot(wand)) {
+            result = Augments.with(wand, recipe.addAugment().get());
+        } else {
+            return null;
+        }
+
+        wand.decrement(1);
+        if (wand.isEmpty()) {
+            entity.discard();
+        } else {
+            entity.setStack(wand);
+        }
+        return result;
+    }
+
+    private ItemEntity findWand(ServerWorld serverWorld) {
+        for (ItemEntity item : nearbyItems(serverWorld)) {
+            if (item.getStack().getItem() instanceof WandItem) {
+                return item;
+            }
+        }
+        return null;
     }
 
     /**

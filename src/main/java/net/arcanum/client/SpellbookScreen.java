@@ -6,6 +6,7 @@ import net.arcanum.spell.SpellRegistry;
 import net.arcanum.spell.SpellMastery;
 import net.arcanum.spell.SpellSchool;
 import net.arcanum.net.payload.SelectSpellPayload;
+import net.arcanum.net.payload.ToggleFavoritePayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,8 +16,11 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import org.lwjgl.glfw.GLFW;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Книга заклинаний: вкладки школ, список заклинаний и описание выбранного.
@@ -44,6 +48,8 @@ public class SpellbookScreen extends Screen {
     private List<Spell> spells = List.of();
     private Spell detail;
     private int scroll;
+    /** Строка поиска: пока она не пуста, вкладки школ не учитываются. */
+    private String filter = "";
 
     private int left;
     private int top;
@@ -61,7 +67,29 @@ public class SpellbookScreen extends Screen {
 
     private void selectSchool(SpellSchool next) {
         school = next;
-        spells = new ArrayList<>(SpellRegistry.bySchool(next));
+        rebuild();
+    }
+
+    /**
+     * Пересобирает список: по школе или, если введён запрос, по всем школам
+     * сразу — искать заклинание удобнее по названию, а не по вкладкам.
+     */
+    private void rebuild() {
+        List<Spell> source = filter.isEmpty()
+                ? SpellRegistry.bySchool(school)
+                : new ArrayList<>(SpellRegistry.all());
+
+        List<Spell> result = new ArrayList<>();
+        String needle = filter.toLowerCase(Locale.ROOT);
+        for (Spell spell : source) {
+            if (needle.isEmpty()
+                    || spell.displayName().getString().toLowerCase(Locale.ROOT).contains(needle)
+                    || spell.id().getPath().contains(needle)) {
+                result.add(spell);
+            }
+        }
+
+        spells = List.copyOf(result);
         scroll = 0;
         detail = spells.isEmpty() ? null : spells.get(0);
     }
@@ -89,8 +117,21 @@ public class SpellbookScreen extends Screen {
                 left + PANEL_WIDTH - 110, top + 7, 0xFF7FD8FF, true);
 
         drawTabs(context, mouseX, mouseY);
+        drawSearch(context);
         drawList(context, mouseX, mouseY);
         drawDetail(context);
+    }
+
+    private void drawSearch(DrawContext context) {
+        int x = left + PANEL_WIDTH - 130;
+        int y = top + 26;
+        context.fill(x, y, x + 122, y + 12, COLOR_ROW);
+
+        Text text = filter.isEmpty()
+                ? Text.translatable("screen.arcanum.search_hint").formatted(Formatting.DARK_GRAY)
+                : Text.literal(filter + "_").formatted(Formatting.WHITE);
+        context.drawText(textRenderer, text, x + 4, y + 2,
+                filter.isEmpty() ? 0xFF6A6A8A : 0xFFE8E4FF, false);
     }
 
     private void drawTabs(DrawContext context, int mouseX, int mouseY) {
@@ -134,7 +175,13 @@ public class SpellbookScreen extends Screen {
             Text name = known
                     ? spell.displayName()
                     : Text.translatable("screen.arcanum.unknown_spell").formatted(Formatting.DARK_GRAY);
-            context.drawText(textRenderer, name, x + 4, rowY + 5, known ? spell.school().argb() : 0xFF6A6A6A, false);
+            int nameX = x + 4;
+            if (ClientSpellState.isFavorite(spell.id())) {
+                context.drawText(textRenderer, Text.literal("★"), nameX, rowY + 5, 0xFFFFD966, false);
+                nameX += 8;
+            }
+            context.drawText(textRenderer, name, nameX, rowY + 5,
+                    known ? spell.school().argb() : 0xFF6A6A6A, false);
 
             Text cost = Text.literal(String.valueOf((int) spell.manaCost())).formatted(Formatting.GRAY);
             context.drawText(textRenderer, cost,
@@ -145,10 +192,10 @@ public class SpellbookScreen extends Screen {
             }
         }
 
-        if (spells.size() > VISIBLE_ROWS) {
-            Text hint = Text.translatable("screen.arcanum.scroll_hint").formatted(Formatting.DARK_GRAY);
-            context.drawText(textRenderer, hint, x, y + VISIBLE_ROWS * ROW_HEIGHT + 2, 0xFF6A6A6A, false);
-        }
+        Text hint = Text.translatable(spells.size() > VISIBLE_ROWS
+                ? "screen.arcanum.scroll_hint" : "screen.arcanum.favorite_hint")
+                .formatted(Formatting.DARK_GRAY);
+        context.drawText(textRenderer, hint, x, y + VISIBLE_ROWS * ROW_HEIGHT + 2, 0xFF6A6A6A, false);
     }
 
     private void drawDetail(DrawContext context) {
@@ -229,15 +276,41 @@ public class SpellbookScreen extends Screen {
                     LIST_WIDTH, ROW_HEIGHT - 2)) {
                 Spell spell = spells.get(index);
                 detail = spell;
-                if (ClientSpellState.knows(spell.id())) {
+                if (!ClientSpellState.knows(spell.id())) {
+                    return true;
+                }
+                // Правая кнопка кладёт заклинание в колесо, левая — выбирает.
+                if (button == 1) {
+                    ClientPlayNetworking.send(new ToggleFavoritePayload(spell.id()));
+                } else {
                     ClientSpellState.setSelectedLocally(spell.id());
                     ClientPlayNetworking.send(new SelectSpellPayload(spell.id()));
-                    click();
                 }
+                click();
                 return true;
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if (chr >= ' ' && filter.length() < 24) {
+            filter += chr;
+            rebuild();
+            return true;
+        }
+        return super.charTyped(chr, modifiers);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_BACKSPACE && !filter.isEmpty()) {
+            filter = filter.substring(0, filter.length() - 1);
+            rebuild();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override

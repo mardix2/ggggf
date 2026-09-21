@@ -1,0 +1,233 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:fallen_grimoire",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 3,
+        "max": 5
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:arcane_crystal",
+          "weight": 6,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 2,
+                "max": 6
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:arcane_dust",
+          "weight": 6,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 3,
+                "max": 8
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:infused_crystal",
+          "weight": 4,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:lunar_essence",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:soul_shard",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:mana_potion",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:charged_mana_crystal",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:mana_gem",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:spell_scroll",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "arcanum:scroll_spell": "arcanum:meteor"
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:spell_scroll",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "arcanum:scroll_spell": "arcanum:chain_lightning"
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:spell_scroll",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "arcanum:scroll_spell": "arcanum:life_drain"
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:spell_scroll",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "arcanum:scroll_spell": "arcanum:blizzard"
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:spell_scroll",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "arcanum:scroll_spell": "arcanum:blessing"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:augment_power",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:augment_efficiency",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:augment_haste",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:augment_reach",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:augment_split",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "arcanum:augment_echo",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package net.arcanum.client;
 
 import net.arcanum.item.ArcaneRobeItem;
+import net.arcanum.item.AugmentItem;
 import net.arcanum.item.FocusItem;
 import net.arcanum.item.ManaCrystalItem;
 import net.arcanum.item.ManaPotionItem;
@@ -8,6 +9,8 @@ import net.arcanum.item.ScrollItem;
 import net.arcanum.item.WandItem;
 import net.arcanum.mana.ArcaneGear;
 import net.arcanum.registry.ModComponents;
+import net.arcanum.spell.Augment;
+import net.arcanum.spell.Augments;
 import net.arcanum.spell.Spell;
 import net.arcanum.spell.SpellSchool;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -43,6 +46,8 @@ public final class ArcanumTooltips {
                 lines.add(bonus("tooltip.arcanum.restores", potion.restore()));
             } else if (stack.getItem() instanceof ArcaneRobeItem robe) {
                 robeTooltip(stack, robe, lines);
+            } else if (stack.getItem() instanceof AugmentItem augment) {
+                augmentTooltip(augment.augment(), lines);
             }
 
             appendBoundSpells(stack, lines);
@@ -61,6 +66,37 @@ public final class ArcanumTooltips {
         if (power > 0.0f) {
             lines.add(percent("tooltip.arcanum.power", power, true));
         }
+
+        List<Augment> augments = Augments.of(stack);
+        lines.add(Text.translatable("tooltip.arcanum.slots", augments.size(), wand.tier())
+                .formatted(Formatting.DARK_PURPLE));
+        for (Augment augment : augments) {
+            lines.add(Text.literal("  ").append(augment.displayName()));
+        }
+    }
+
+    /** Руна-модификатор: показываем и прибавку, и плату за неё. */
+    private static void augmentTooltip(Augment augment, List<Text> lines) {
+        if (augment.power() != 0.0f) {
+            lines.add(percent("tooltip.arcanum.power", augment.power(), true));
+        }
+        if (augment.cost() != 0.0f) {
+            lines.add(percent("tooltip.arcanum.cost", augment.cost(), false));
+        }
+        if (augment.cooldown() != 0.0f) {
+            lines.add(percent("tooltip.arcanum.cooldown", augment.cooldown(), false));
+        }
+        if (augment.range() != 0.0f) {
+            lines.add(percent("tooltip.arcanum.reach", augment.range(), true));
+        }
+        if (augment.extraShots() > 0) {
+            lines.add(bonus("tooltip.arcanum.extra_shots", augment.extraShots()));
+        }
+        if (augment == Augment.ECHO) {
+            lines.add(Text.translatable("tooltip.arcanum.echo",
+                    Math.round(Augment.ECHO_CHANCE * 100)).formatted(Formatting.GREEN));
+        }
+        lines.add(Text.translatable("tooltip.arcanum.augment_install").formatted(Formatting.DARK_GRAY));
     }
 
     private static void focusTooltip(FocusItem focus, List<Text> lines) {

@@ -60,7 +60,7 @@ public final class ShadowSpells {
                 .type(SpellCastType.TARGET)
                 .tier(2).cost(28.0f).cooldown(80)
                 .action(ctx -> {
-                    LivingEntity target = SpellUtil.raycastEntity(ctx.caster(), 20.0);
+                    LivingEntity target = SpellUtil.raycastEntity(ctx, 20.0);
                     if (target == null) {
                         return false;
                     }
@@ -84,7 +84,7 @@ public final class ShadowSpells {
                 .type(SpellCastType.TARGET)
                 .tier(3).cost(42.0f).cooldown(180)
                 .action(ctx -> {
-                    LivingEntity target = SpellUtil.raycastEntity(ctx.caster(), 24.0);
+                    LivingEntity target = SpellUtil.raycastEntity(ctx, 24.0);
                     if (target == null) {
                         return false;
                     }

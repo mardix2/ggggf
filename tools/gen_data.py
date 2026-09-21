@@ -8,7 +8,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from content import BLOCKS, ITEMS, SCHOOLS, SPELLS
+from content import AUGMENTS, BLOCKS, ITEMS, SCHOOLS, SPELLS
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 DATA = os.path.join(ROOT, "src/main/resources/data")
@@ -122,17 +122,23 @@ def recipes():
 #  Обряды алтаря
 # ----------------------------------------------------------------------
 
-def infusion(name, inputs, result, count=1, pedestals=0, mana=0, scroll_school=None):
-    data = {
-        "inputs": [{"item": item(i), "count": c} for (i, c) in inputs],
-        "result": {"item": item(result), "count": count},
-    }
+def infusion(name, inputs, result=None, count=1, pedestals=0, mana=0, scroll_school=None,
+             requires_wand=False, add_augment=None, clear_augments=False):
+    data = {"inputs": [{"item": item(i), "count": c} for (i, c) in inputs]}
+    if result is not None:
+        data["result"] = {"item": item(result), "count": count}
     if pedestals:
         data["pedestals"] = pedestals
     if mana:
         data["mana"] = mana
     if scroll_school:
         data["scroll_school"] = scroll_school
+    if requires_wand:
+        data["requires_wand"] = True
+    if add_augment:
+        data["add_augment"] = add_augment
+    if clear_augments:
+        data["clear_augments"] = True
     write(mod("infusion", name + ".json"), data)
 
 
@@ -208,6 +214,30 @@ def infusions():
     infusion("mana_font",
              [("arcane_crystal_block", 1), ("infused_crystal", 4), ("lunar_essence", 1)],
              "mana_font", pedestals=4, mana=250)
+
+    # Сами руны-модификаторы.
+    augment_reagents = {
+        "power": ("rune_fire", 2, "minecraft:gold_ingot", 1),
+        "efficiency": ("rune_arcane", 2, "minecraft:lapis_lazuli", 3),
+        "haste": ("rune_storm", 2, "minecraft:sugar", 3),
+        "reach": ("rune_light", 2, "minecraft:ender_pearl", 1),
+        "split": ("rune_nature", 2, "minecraft:arrow", 4),
+        "echo": ("rune_shadow", 2, "soul_shard", 2),
+    }
+    for name, (rune, rune_count, extra, extra_count) in augment_reagents.items():
+        infusion("augment_" + name,
+                 [(rune, rune_count), ("infused_crystal", 1), (extra, extra_count)],
+                 "augment_" + name, pedestals=2, mana=120)
+
+        # Вплавление в посох: посох лежит рядом и возвращается с новой руной.
+        infusion("augment_install_" + name,
+                 [("augment_" + name, 1), ("arcane_dust", 2)],
+                 pedestals=2, mana=150, requires_wand=True, add_augment=name)
+
+    # Вынуть руны обратно нельзя, но освободить слоты — можно.
+    infusion("augment_clear",
+             [("arcane_dust", 4), ("minecraft:water_bucket", 1)],
+             pedestals=1, mana=60, requires_wand=True, clear_augments=True)
 
     robes = [
         ("arcane_hood", "minecraft:leather_helmet", 2, 150),
@@ -287,8 +317,14 @@ def tags():
           tag([item("focus_" + school) for school in SCHOOLS]))
     write(mod("tags", "item", "runes.json"),
           tag([item("rune_" + school) for school in SCHOOLS]))
+    write(mod("tags", "item", "augments.json"),
+          tag([item("augment_" + name) for name in AUGMENTS]))
     write(mod("tags", "block", "runestones.json"),
           tag([item("runestone_" + school) for school in SCHOOLS]))
+
+    # Заклинание «Взор недр» ищет руду по общепринятому тегу c:ores.
+    write(os.path.join(DATA, "c", "tags", "block", "ores.json"),
+          tag([item("arcane_crystal_ore"), item("deepslate_arcane_crystal_ore")]))
 
     pickaxe = [item(name) for name, (_ru, _en, kind) in BLOCKS.items()
                if kind not in ("cross",)]
@@ -414,6 +450,67 @@ def advancement(name, parent, icon, frame, criteria, requirements=None, backgrou
     write(mod("advancement", name + ".json"), data)
 
 
+def wizard_tower():
+    """Башня павшего мага: фича генерации и её сундук."""
+    write(mod("worldgen", "configured_feature", "wizard_tower.json"), {
+        "type": item("wizard_tower"),
+        "config": {},
+    })
+    write(mod("worldgen", "placed_feature", "wizard_tower_placed.json"), {
+        "feature": item("wizard_tower"),
+        "placement": [
+            {"type": "minecraft:rarity_filter", "chance": 220},
+            {"type": "minecraft:in_square"},
+            {"type": "minecraft:heightmap", "heightmap": "WORLD_SURFACE_WG"},
+            {"type": "minecraft:biome"},
+        ],
+    })
+
+    def entry(name, minimum=1, maximum=1, weight=1):
+        data = {"type": "minecraft:item", "name": item(name), "weight": weight}
+        if maximum > 1 or minimum > 1:
+            data["functions"] = [{
+                "function": "minecraft:set_count",
+                "count": {"type": "minecraft:uniform", "min": minimum, "max": maximum},
+            }]
+        return data
+
+    def scroll(spell):
+        return {
+            "type": "minecraft:item",
+            "name": item("spell_scroll"),
+            "weight": 3,
+            "functions": [{
+                "function": "minecraft:set_components",
+                "components": {item("scroll_spell"): item(spell)},
+            }],
+        }
+
+    write(mod("loot_table", "chests", "wizard_tower.json"), {
+        "type": "minecraft:chest",
+        "pools": [
+            # Гримуар — смысл всей вылазки, поэтому он лежит всегда.
+            {"rolls": 1, "entries": [entry("fallen_grimoire")]},
+            {"rolls": {"type": "minecraft:uniform", "min": 3, "max": 5},
+             "entries": [
+                 entry("arcane_crystal", 2, 6, weight=6),
+                 entry("arcane_dust", 3, 8, weight=6),
+                 entry("infused_crystal", 1, 3, weight=4),
+                 entry("lunar_essence", 1, 2, weight=3),
+                 entry("soul_shard", 1, 2, weight=3),
+                 entry("mana_potion", 1, 2, weight=3),
+                 entry("charged_mana_crystal", 1, 1, weight=2),
+                 entry("mana_gem", 1, 1, weight=1),
+             ]},
+            {"rolls": {"type": "minecraft:uniform", "min": 1, "max": 2},
+             "entries": [scroll(name) for name in
+                         ("meteor", "chain_lightning", "life_drain", "blizzard", "blessing")]},
+            {"rolls": 1,
+             "entries": [entry("augment_" + name) for name in AUGMENTS]},
+        ],
+    })
+
+
 def advancements():
     advancement("root", None, "arcane_crystal", "task",
                 {"crystal": has_items("arcane_crystal")},
@@ -432,6 +529,12 @@ def advancements():
     }, requirements=[["hood"], ["robe"], ["leggings"], ["boots"]])
     advancement("archmage", "altar", "eldritch_scepter", "challenge",
                 {"scepter": has_items("eldritch_scepter")})
+    advancement("tower", "altar", "fallen_grimoire", "goal",
+                {"grimoire": has_items("fallen_grimoire")})
+    advancement("augment", "altar", "augment_power", "task", {
+        "augment": {"trigger": "minecraft:inventory_changed",
+                    "conditions": {"items": [{"items": "#arcanum:augments"}]}},
+    })
 
 
 def main():
@@ -440,6 +543,7 @@ def main():
     loot_tables()
     tags()
     worldgen()
+    wizard_tower()
     advancements()
     print("Датапак готов.")
 

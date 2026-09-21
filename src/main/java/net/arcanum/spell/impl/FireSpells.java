@@ -115,7 +115,7 @@ public final class FireSpells {
                 .type(SpellCastType.TARGET)
                 .tier(2).cost(25.0f).cooldown(80)
                 .action(ctx -> {
-                    LivingEntity target = SpellUtil.raycastEntity(ctx.caster(), 24.0);
+                    LivingEntity target = SpellUtil.raycastEntity(ctx, 24.0);
                     if (target == null) {
                         return false;
                     }
@@ -148,7 +148,7 @@ public final class FireSpells {
                 .type(SpellCastType.AREA)
                 .tier(3).cost(65.0f).cooldown(240)
                 .action(ctx -> {
-                    Vec3d impact = SpellUtil.aimPoint(ctx.caster(), 32.0);
+                    Vec3d impact = SpellUtil.aimPoint(ctx, 32.0);
                     Vec3d start = impact.add(0.0, 14.0, 0.0);
                     Fx.sound(ctx.world(), impact, SoundEvents.ENTITY_WITHER_SHOOT, 1.4f, 0.6f);
 
@@ -182,7 +182,7 @@ public final class FireSpells {
                 .type(SpellCastType.LINGERING)
                 .tier(4).cost(110.0f).cooldown(600)
                 .action(ctx -> {
-                    Vec3d center = SpellUtil.aimPoint(ctx.caster(), 24.0);
+                    Vec3d center = SpellUtil.aimPoint(ctx, 24.0);
                     int duration = 10 * 20;
                     Fx.sound(ctx.world(), center, SoundEvents.ITEM_FIRECHARGE_USE, 2.0f, 0.5f);
 

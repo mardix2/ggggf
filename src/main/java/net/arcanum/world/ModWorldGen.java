@@ -28,7 +28,12 @@ public final class ModWorldGen {
     private static final RegistryKey<PlacedFeature> MOONPETAL =
             RegistryKey.of(RegistryKeys.PLACED_FEATURE, Arcanum.id("moonpetal_placed"));
 
+    private static final RegistryKey<PlacedFeature> WIZARD_TOWER =
+            RegistryKey.of(RegistryKeys.PLACED_FEATURE, Arcanum.id("wizard_tower_placed"));
+
     public static void init() {
+        ModFeatures.init();
+
         BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(),
                 GenerationStep.Feature.UNDERGROUND_ORES, ARCANE_CRYSTAL_ORE);
         BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(),
@@ -37,5 +42,10 @@ public final class ModWorldGen {
         BiomeModifications.addFeature(
                 BiomeSelectors.tag(BiomeTags.IS_FOREST),
                 GenerationStep.Feature.VEGETAL_DECORATION, MOONPETAL);
+
+        // Башня ставится на шаге построек: к этому моменту рельеф уже готов,
+        // а деревья ещё не выросли внутри стен.
+        BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(),
+                GenerationStep.Feature.SURFACE_STRUCTURES, WIZARD_TOWER);
     }
 }

@@ -1,5 +1,6 @@
 package net.arcanum.net;
 
+import net.arcanum.ArcanumConfig;
 import net.arcanum.mana.ManaData;
 import net.arcanum.mana.ManaManager;
 import net.arcanum.net.payload.CooldownPayload;
@@ -7,6 +8,7 @@ import net.arcanum.net.payload.KnownSpellsPayload;
 import net.arcanum.net.payload.ManaSyncPayload;
 import net.arcanum.net.payload.OpenSpellbookPayload;
 import net.arcanum.net.payload.SelectSpellPayload;
+import net.arcanum.net.payload.ToggleFavoritePayload;
 import net.arcanum.spell.SpellRegistry;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -36,12 +38,21 @@ public final class ModNetworking {
         PayloadTypeRegistry.playS2C().register(CooldownPayload.ID, CooldownPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(OpenSpellbookPayload.ID, OpenSpellbookPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SelectSpellPayload.ID, SelectSpellPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(ToggleFavoritePayload.ID, ToggleFavoritePayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(SelectSpellPayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
             MinecraftServer server = player.getServer();
             if (server != null) {
                 server.execute(() -> selectSpell(player, payload.spell()));
+            }
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(ToggleFavoritePayload.ID, (payload, context) -> {
+            ServerPlayerEntity player = context.player();
+            MinecraftServer server = player.getServer();
+            if (server != null) {
+                server.execute(() -> toggleFavorite(player, payload.spell()));
             }
         });
     }
@@ -62,6 +73,19 @@ public final class ModNetworking {
         syncSpells(player);
     }
 
+    /** Клиент попросил переключить избранное. Проверяем так же, как выбор. */
+    private static void toggleFavorite(ServerPlayerEntity player, Identifier spell) {
+        if (SpellRegistry.get(spell) == null) {
+            return;
+        }
+        ManaData data = ManaManager.data(player);
+        if (!data.knows(spell)) {
+            return;
+        }
+        ManaManager.set(player, data.toggleFavorite(spell, ArcanumConfig.MAX_FAVORITES));
+        syncSpells(player);
+    }
+
     public static void syncMana(ServerPlayerEntity player) {
         int mana = (int) ManaManager.current(player);
         int max = ManaManager.max(player);
@@ -76,7 +100,7 @@ public final class ModNetworking {
     public static void syncSpells(ServerPlayerEntity player) {
         ManaData data = ManaManager.data(player);
         ServerPlayNetworking.send(player,
-                new KnownSpellsPayload(data.known(), data.selected(), data.casts()));
+                new KnownSpellsPayload(data.known(), data.selected(), data.casts(), data.favorites()));
     }
 
     public static void syncCooldown(ServerPlayerEntity player, Identifier spell, int ticks) {

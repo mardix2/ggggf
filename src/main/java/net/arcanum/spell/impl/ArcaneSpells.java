@@ -8,21 +8,32 @@ import net.arcanum.spell.Spell;
 import net.arcanum.spell.SpellCastType;
 import net.arcanum.spell.SpellSchool;
 import net.arcanum.spell.util.Fx;
+import net.arcanum.spell.util.SpellTicker;
 import net.arcanum.spell.util.SpellUtil;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Чистая магия: перемещение, сила, защита и знание. */
 public final class ArcaneSpells {
     private ArcaneSpells() {
     }
+
+    /** Больше искр разом — и кадр проседает, и в глазах рябит. */
+    private static final int MAX_PROSPECT_HITS = 64;
 
     public static void init() {
         magicMissile();
@@ -31,7 +42,37 @@ public final class ArcaneSpells {
         telekinesis();
         manaShield();
         arcaneSight();
+        prospect();
         recall();
+    }
+
+    /** Цвет искры над рудой: по названию блока, чтобы не заводить таблицу на каждый мод. */
+    private static int oreColor(String path) {
+        if (path.contains("diamond")) {
+            return 0x5CE6E0;
+        }
+        if (path.contains("emerald")) {
+            return 0x3CE06A;
+        }
+        if (path.contains("gold")) {
+            return 0xF2C13B;
+        }
+        if (path.contains("redstone")) {
+            return 0xE23B3B;
+        }
+        if (path.contains("lapis")) {
+            return 0x2F5BE0;
+        }
+        if (path.contains("copper")) {
+            return 0xE08A3B;
+        }
+        if (path.contains("coal")) {
+            return 0x4A4A55;
+        }
+        if (path.contains("arcane")) {
+            return SpellSchool.ARCANE.color();
+        }
+        return 0xD8D8E0;
     }
 
     /** Три самонаводящихся снаряда — надёжный, хоть и небыстрый урон. */
@@ -63,7 +104,7 @@ public final class ArcaneSpells {
                 .tier(1).cost(16.0f).cooldown(40)
                 .action(ctx -> {
                     Vec3d from = ctx.feet();
-                    Vec3d target = SpellUtil.aimPoint(ctx.caster(), 16.0);
+                    Vec3d target = SpellUtil.aimPoint(ctx, 16.0);
                     // Отходим от стены, в которую упёрся взгляд.
                     Vec3d adjusted = target.subtract(ctx.look().multiply(0.8));
                     Vec3d safe = SpellUtil.safeSpot(ctx.world(), adjusted);
@@ -100,7 +141,7 @@ public final class ArcaneSpells {
                 .type(SpellCastType.TARGET)
                 .tier(2).cost(20.0f).cooldown(50)
                 .action(ctx -> {
-                    LivingEntity target = SpellUtil.raycastEntity(ctx.caster(), 24.0);
+                    LivingEntity target = SpellUtil.raycastEntity(ctx, 24.0);
                     if (target == null) {
                         return false;
                     }
@@ -149,6 +190,58 @@ public final class ArcaneSpells {
                     SpellUtil.effect(ctx.caster(), StatusEffects.NIGHT_VISION, 45 * 20, 0);
                     Fx.helix(ctx.world(), ctx.feet(), 0.8, 2.0, ParticleTypes.END_ROD, 40, 2.0);
                     Fx.sound(ctx.world(), ctx.feet(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 0.8f, 1.5f);
+                    return true;
+                })
+                .register();
+    }
+
+    /**
+     * Взор недр: на десять секунд подсвечивает руду вокруг.
+     *
+     * <p>Блоки в Minecraft подсветить нельзя, поэтому над каждой жилой
+     * висит искра цвета самой руды — сквозь камень её видно так же плохо,
+     * как и любые частицы, зато у поверхности пласта читается отлично.
+     */
+    private static void prospect() {
+        Spell.builder("prospect", SpellSchool.ARCANE)
+                .type(SpellCastType.UTILITY)
+                .tier(2).cost(28.0f).cooldown(300)
+                .action(ctx -> {
+                    int radius = (int) ctx.reach(10.0);
+                    BlockPos origin = ctx.caster().getBlockPos();
+                    List<BlockPos> found = new ArrayList<>();
+                    List<Integer> colors = new ArrayList<>();
+
+                    for (BlockPos pos : BlockPos.iterate(origin.add(-radius, -radius, -radius),
+                            origin.add(radius, radius, radius))) {
+                        if (found.size() >= MAX_PROSPECT_HITS) {
+                            break;
+                        }
+                        BlockState state = ctx.world().getBlockState(pos);
+                        if (!state.isIn(ConventionalBlockTags.ORES)) {
+                            continue;
+                        }
+                        found.add(pos.toImmutable());
+                        colors.add(oreColor(Registries.BLOCK.getId(state.getBlock()).getPath()));
+                    }
+
+                    if (found.isEmpty()) {
+                        SpellUtil.message(ctx, Text.translatable("message.arcanum.no_ore")
+                                .formatted(Formatting.GRAY));
+                        return false;
+                    }
+
+                    SpellTicker.schedule(ctx.world(), 200, 20, elapsed -> {
+                        for (int i = 0; i < found.size(); i++) {
+                            Vec3d at = Vec3d.ofCenter(found.get(i));
+                            Fx.burst(ctx.world(), at, Fx.dust(colors.get(i), 1.0f), 2, 0.25, 0.0);
+                        }
+                        return true;
+                    });
+
+                    SpellUtil.message(ctx, Text.translatable("message.arcanum.ore_found", found.size())
+                            .formatted(Formatting.AQUA));
+                    Fx.sound(ctx.world(), ctx.feet(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, 1.0f, 0.7f);
                     return true;
                 })
                 .register();

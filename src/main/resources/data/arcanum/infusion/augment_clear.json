@@ -1,0 +1,16 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:arcane_dust",
+      "count": 4
+    },
+    {
+      "item": "minecraft:water_bucket",
+      "count": 1
+    }
+  ],
+  "pedestals": 1,
+  "mana": 60,
+  "requires_wand": true,
+  "clear_augments": true
+}

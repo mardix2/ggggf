@@ -23,6 +23,8 @@ public final class ModTags {
         public static final TagKey<Item> FOCUSES = of("focuses");
         /** Руны всех школ. */
         public static final TagKey<Item> RUNES = of("runes");
+        /** Руны-модификаторы для посохов. */
+        public static final TagKey<Item> AUGMENTS = of("augments");
 
         private static TagKey<Item> of(String path) {
             return TagKey.of(RegistryKeys.ITEM, Arcanum.id(path));

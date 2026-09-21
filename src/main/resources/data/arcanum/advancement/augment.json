@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "arcanum:augment_power"
+    },
+    "title": {
+      "translate": "advancements.arcanum.augment.title"
+    },
+    "description": {
+      "translate": "advancements.arcanum.augment.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "augment": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#arcanum:augments"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "arcanum:altar"
+}

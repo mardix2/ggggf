@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "arcanum:augment_power",
+    "arcanum:augment_efficiency",
+    "arcanum:augment_haste",
+    "arcanum:augment_reach",
+    "arcanum:augment_split",
+    "arcanum:augment_echo"
+  ]
+}

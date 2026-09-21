@@ -45,6 +45,7 @@ ITEMS = {
     "archmage_staff": ("Посох архимага", "Archmage Staff"),
     "eldritch_scepter": ("Скипетр запредельного", "Eldritch Scepter"),
     "spellbook": ("Книга заклинаний", "Spellbook"),
+    "fallen_grimoire": ("Гримуар павшего мага", "Fallen Mage's Grimoire"),
     "spell_scroll": ("Свиток заклинания", "Spell Scroll"),
     "arcane_hood": ("Капюшон чародея", "Arcane Hood"),
     "arcane_robe": ("Мантия чародея", "Arcane Robe"),
@@ -55,6 +56,19 @@ ITEMS = {
 for _school, (_ru, _en) in SCHOOL_NAMES.items():
     ITEMS["rune_" + _school] = ("Руна: " + _ru, _en + " Rune")
     ITEMS["focus_" + _school] = ("Фокус: " + _ru, _en + " Focus")
+
+#: Руны-модификаторы: id -> (русское имя, английское имя, описание для подсказки)
+AUGMENTS = {
+    "power": ("Руна усиления", "Rune of Power"),
+    "efficiency": ("Руна бережливости", "Rune of Thrift"),
+    "haste": ("Руна скорости", "Rune of Haste"),
+    "reach": ("Руна дальнобойности", "Rune of Reach"),
+    "split": ("Руна расщепления", "Rune of Splitting"),
+    "echo": ("Руна эха", "Rune of Echo"),
+}
+
+for _augment, (_ru, _en) in AUGMENTS.items():
+    ITEMS["augment_" + _augment] = (_ru, _en)
 
 # Блоки: id -> (русское имя, английское имя, вид модели)
 BLOCKS = {
@@ -84,7 +98,9 @@ ITEMS_3D = {
     "arcane_crystal", "infused_crystal", "dim_mana_crystal", "charged_mana_crystal",
     "mana_gem", "soul_shard", "lunar_essence",
     "mana_potion", "greater_mana_potion",
-} | {"focus_" + _s for _s in SCHOOLS} | {"rune_" + _s for _s in SCHOOLS}
+    "fallen_grimoire",
+} | {"focus_" + _s for _s in SCHOOLS} | {"rune_" + _s for _s in SCHOOLS} \
+  | {"augment_" + _a for _a in AUGMENTS}
 
 #: Предметы, которым нужен обычный спрайт 16x16.
 SPRITE_ITEMS = (set(ITEMS) - ITEMS_3D) | {"rune_" + _s for _s in SCHOOLS}
@@ -108,6 +124,19 @@ EFFECTS = {
     "blessed": ("Благословение", "Blessed"),
     "arcane_sight": ("Взор мага", "Arcane Sight"),
     "silence": ("Безмолвие", "Silence"),
+    "charged": ("Статический заряд", "Charged"),
+    "destabilized": ("Нестабильность", "Destabilized"),
+}
+
+#: Реакции школ: id -> (название для сообщения, английское название)
+REACTIONS = {
+    "thermal_shock": ("Термоудар!", "Thermal shock!"),
+    "quench": ("Закалка!", "Quench!"),
+    "conduction": ("Проводник!", "Conduction!"),
+    "resonance": ("Резонанс!", "Resonance!"),
+    "rot": ("Гниль!", "Rot!"),
+    "overgrowth": ("Прорастание!", "Overgrowth!"),
+    "dispersion": ("Развеивание!", "Dispersion!"),
 }
 
 # Заклинания: id -> (школа, ru имя, ru описание, en имя, en описание)
@@ -177,6 +206,9 @@ SPELLS = {
     "mana_shield": ("arcane", "Мановый щит",
                     "30 секунд входящий урон списывается с маны, а не со здоровья.",
                     "Mana Shield", "For 30s damage drains mana instead of health."),
+    "prospect": ("arcane", "Взор недр",
+                 "10 секунд подсвечивает руду вокруг искрами её собственного цвета.",
+                 "Prospect", "Marks nearby ores with sparks for 10 seconds."),
     "arcane_sight": ("arcane", "Взор мага",
                      "45 секунд подсвечивает всё живое вокруг и даёт ночное зрение.",
                      "Arcane Sight", "45s of highlighted creatures and night vision."),

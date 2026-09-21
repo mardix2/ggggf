@@ -7,8 +7,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from content import (BLOCKS, CAST_TYPES, EFFECTS, ITEMS, ITEMS_3D, SCHOOLS,
-                     SCHOOL_NAMES, SPELLS)
+from content import (BLOCKS, CAST_TYPES, EFFECTS, ITEMS, ITEMS_3D, REACTIONS,
+                     SCHOOLS, SCHOOL_NAMES, SPELLS)
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 ASSETS = os.path.join(ROOT, "src/main/resources/assets/arcanum")
@@ -190,6 +190,8 @@ def lang(index):
         out[f"school.arcanum.{school}"] = names[index]
     for cast, names in CAST_TYPES.items():
         out[f"casttype.arcanum.{cast}"] = names[index]
+    for reaction, names in REACTIONS.items():
+        out[f"reaction.arcanum.{reaction}"] = names[index]
 
     for spell, (_school, ru_name, ru_desc, en_name, en_desc) in SPELLS.items():
         out[f"spell.arcanum.{spell}"] = ru_name if index == 0 else en_name
@@ -210,6 +212,8 @@ def lang(index):
         "key.arcanum.spellbook": ("Книга заклинаний", "Spellbook"),
         "key.arcanum.next_spell": ("Следующее заклинание", "Next spell"),
         "key.arcanum.prev_spell": ("Предыдущее заклинание", "Previous spell"),
+        "key.arcanum.spell_wheel": ("Колесо заклинаний (удерживать)",
+                                    "Spell wheel (hold)"),
     }
     for key, names in keys.items():
         out[key] = names[index]
@@ -236,6 +240,13 @@ def lang(index):
         "screen.arcanum.stat.cooldown": ("Перезарядка", "Cooldown"),
         "screen.arcanum.stat.mastery": ("Мастерство", "Mastery"),
         "screen.arcanum.stat.progress": ("До следующего", "To next level"),
+        "screen.arcanum.search_hint": ("поиск…", "search…"),
+        "screen.arcanum.favorite_hint": ("ПКМ — в колесо", "Right click: add to wheel"),
+        "screen.arcanum.wheel": ("Колесо заклинаний", "Spell Wheel"),
+        "screen.arcanum.wheel_hint": ("Ведите мышь к заклинанию",
+                                      "Move the mouse toward a spell"),
+        "screen.arcanum.wheel_empty": ("Колесо пусто — отметьте заклинания в книге",
+                                       "Wheel is empty — mark spells in the book"),
     }
     for key, names in screen.items():
         out[key] = names[index]
@@ -257,6 +268,12 @@ def lang(index):
         "tooltip.arcanum.stored": ("Запас маны: %s / %s", "Stored mana: %s / %s"),
         "tooltip.arcanum.restores": ("Восстанавливает %s маны", "Restores %s mana"),
         "tooltip.arcanum.bound": ("Впечатанные заклинания:", "Bound spells:"),
+        "tooltip.arcanum.reach": ("Дальность: %s", "Range: %s"),
+        "tooltip.arcanum.extra_shots": ("Снарядов: %s", "Extra projectiles: %s"),
+        "tooltip.arcanum.echo": ("Шанс повтора: %s %%", "Repeat chance: %s%%"),
+        "tooltip.arcanum.augment_install": ("Вплавляется в посох на алтаре",
+                                            "Infuse into a wand at the altar"),
+        "tooltip.arcanum.slots": ("Руны: %s / %s", "Runes: %s / %s"),
     }
     for key, names in tooltip.items():
         out[key] = names[index]
@@ -310,6 +327,12 @@ def lang(index):
         "message.arcanum.altar.no_mana": ("Для обряда нужно %s маны",
                                           "The ritual needs %s mana"),
         "message.arcanum.altar.interrupted": ("Обряд сорвался", "The ritual collapsed"),
+        "message.arcanum.altar.no_slots": ("В посохе нет свободных слотов под руны",
+                                           "This wand has no free rune slots"),
+        "message.arcanum.no_ore": ("Руды поблизости нет", "No ore nearby"),
+        "message.arcanum.ore_found": ("Найдено жил: %s", "Ore veins found: %s"),
+        "message.arcanum.grimoire_spent": ("Вы знаете всё, что помнила книга",
+                                           "You already know all the book remembered"),
     }
     for key, names in messages.items():
         out[key] = names[index]
@@ -334,6 +357,12 @@ def lang(index):
         "advancements.arcanum.archmage.title": ("Архимаг", "Archmage"),
         "advancements.arcanum.archmage.description": ("Создайте скипетр запредельного",
                                                       "Craft the eldritch scepter"),
+        "advancements.arcanum.tower.title": ("Башня на горизонте", "Tower on the Horizon"),
+        "advancements.arcanum.tower.description": ("Найдите башню павшего мага и заберите гримуар",
+                                                   "Find the fallen mage's tower and take the grimoire"),
+        "advancements.arcanum.augment.title": ("Тонкая настройка", "Fine Tuning"),
+        "advancements.arcanum.augment.description": ("Создайте руну-модификатор для посоха",
+                                                     "Craft a rune that modifies your wand"),
     }
     for key, names in advancements.items():
         out[key] = names[index]

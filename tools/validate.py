@@ -17,8 +17,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from content import (ANIMATED_BLOCK_TEXTURES, BLOCKS, EFFECTS, ITEMS, ITEMS_3D,
-                     SCHOOLS, SPELLS, SPRITE_ITEMS)
+from content import (ANIMATED_BLOCK_TEXTURES, AUGMENTS, BLOCKS, EFFECTS, ITEMS,
+                     ITEMS_3D, SCHOOLS, SPELLS, SPRITE_ITEMS)
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SRC = os.path.join(ROOT, "src/main/java/net/arcanum")
@@ -63,7 +63,17 @@ def expand(names):
 
 def registered_items():
     text = read(os.path.join(SRC, "registry/ModItems.java"))
-    return expand(re.findall(r'register\(\s*"([a-z0-9_]+)"', text))
+    names = expand(re.findall(r'register\(\s*"([a-z0-9_]+)"', text))
+    # Руны-модификаторы регистрируются циклом по перечислению Augment.
+    if "register(augment.itemName()" in text:
+        names |= {"augment_" + name for name in augment_names()}
+    return names
+
+
+def augment_names():
+    """Имена значений перечисления Augment — источник истины для предметов-рун."""
+    text = read(os.path.join(SRC, "spell/Augment.java"))
+    return set(re.findall(r'^\s+[A-Z_]+\("([a-z_]+)"', text, re.MULTILINE))
 
 
 def registered_blocks():
@@ -93,7 +103,8 @@ def translation_keys_used():
     keys = set()
     for path in java_files():
         for match in pattern.findall(read(path)):
-            if "arcanum" in match and not match.endswith("."):
+            # Имена файлов тоже выглядят как ключи, но переводить их не нужно.
+            if "arcanum" in match and not match.endswith(".") and not match.endswith(".json"):
                 keys.add(match)
     return keys
 
@@ -436,6 +447,30 @@ def check_advancements():
                          f"неизвестное условие {criterion}")
 
 
+def check_augments():
+    """Руны-модификаторы: перечисление, предметы, обряды и переводы должны совпадать."""
+    names = augment_names()
+    if names != set(AUGMENTS):
+        fail(f"перечисление Augment и content.py расходятся: "
+             f"только в Java {sorted(names - set(AUGMENTS))}, "
+             f"только в content {sorted(set(AUGMENTS) - names)}")
+
+    directory = os.path.join(DATA, "arcanum", "infusion")
+    for name in sorted(names):
+        for prefix in ("augment_", "augment_install_"):
+            path = os.path.join(directory, prefix + name + ".json")
+            if not os.path.exists(path):
+                fail(f"нет обряда {prefix}{name}.json")
+
+    # Обряд без результата обязан объяснять, откуда он его возьмёт.
+    for name in sorted(os.listdir(directory)):
+        recipe = json.loads(read(os.path.join(directory, name)))
+        if "result" not in recipe and not recipe.get("requires_wand"):
+            fail(f"обряд {name}: нет ни result, ни requires_wand")
+        if recipe.get("add_augment") and recipe["add_augment"] not in names:
+            fail(f"обряд {name}: неизвестная руна {recipe['add_augment']}")
+
+
 def check_loot_tables():
     directory = os.path.join(DATA, "arcanum", "loot_table", "blocks")
     for name in BLOCKS:
@@ -457,6 +492,7 @@ def main():
     check_worldgen_links()
     check_loot_tables()
     check_advancements()
+    check_augments()
 
     print(f"Проверено JSON-файлов: {parsed}")
     print(f"Предметов: {len(ITEMS)} (объёмных моделей: {len(ITEMS_3D)}), "

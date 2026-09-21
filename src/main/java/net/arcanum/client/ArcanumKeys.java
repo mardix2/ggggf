@@ -31,6 +31,10 @@ public final class ArcanumKeys {
     public static final KeyBinding PREV_SPELL = KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "key.arcanum.prev_spell", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_Z, CATEGORY));
 
+    /** Колесо быстрого выбора: работает, пока клавиша удерживается. */
+    public static final KeyBinding SPELL_WHEEL = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.arcanum.spell_wheel", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, CATEGORY));
+
     public static void init() {
         // Обращение к классу запускает статическую инициализацию.
     }

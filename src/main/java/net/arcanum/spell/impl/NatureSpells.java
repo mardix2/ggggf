@@ -80,7 +80,7 @@ public final class NatureSpells {
                 .type(SpellCastType.AREA)
                 .tier(2).cost(26.0f).cooldown(120)
                 .action(ctx -> {
-                    Vec3d center = SpellUtil.aimPoint(ctx.caster(), 20.0);
+                    Vec3d center = SpellUtil.aimPoint(ctx, 20.0);
                     boolean caught = false;
                     for (LivingEntity target : SpellUtil.enemiesAround(ctx, center, 6.0)) {
                         BlockPos pos = target.getBlockPos();
@@ -102,7 +102,7 @@ public final class NatureSpells {
                 .type(SpellCastType.UTILITY)
                 .tier(1).cost(24.0f).cooldown(100)
                 .action(ctx -> {
-                    BlockPos center = BlockPos.ofFloored(SpellUtil.aimPoint(ctx.caster(), 16.0));
+                    BlockPos center = BlockPos.ofFloored(SpellUtil.aimPoint(ctx, 16.0));
                     ItemStack boneMeal = new ItemStack(Items.BONE_MEAL);
                     int grown = 0;
 

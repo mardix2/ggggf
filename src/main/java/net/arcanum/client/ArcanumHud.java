@@ -1,6 +1,7 @@
 package net.arcanum.client;
 
 import net.arcanum.Arcanum;
+import net.arcanum.ArcanumConfig;
 import net.arcanum.spell.Spell;
 import net.arcanum.spell.SpellMastery;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
@@ -20,8 +21,6 @@ import net.minecraft.util.Formatting;
  */
 public final class ArcanumHud implements HudElement {
 
-    private static final int X = 10;
-    private static final int Y = 10;
     private static final int WIDTH = 110;
     private static final int HEIGHT = 12;
 
@@ -52,53 +51,57 @@ public final class ArcanumHud implements HudElement {
     }
 
     private void drawManaBar(DrawContext context, MinecraftClient client) {
-        context.fill(X - 1, Y - 1, X + WIDTH + 1, Y + HEIGHT + 1, COLOR_FRAME);
-        context.fill(X, Y, X + WIDTH, Y + HEIGHT, COLOR_BACK);
+        int x = ArcanumConfig.HUD_X;
+        int y = ArcanumConfig.HUD_Y;
+
+        context.fill(x - 1, y - 1, x + WIDTH + 1, y + HEIGHT + 1, COLOR_FRAME);
+        context.fill(x, y, x + WIDTH, y + HEIGHT, COLOR_BACK);
 
         int filled = Math.round(WIDTH * ClientSpellState.manaFraction());
         if (filled > 0) {
-            context.fill(X, Y, X + filled, Y + HEIGHT, COLOR_MANA);
+            context.fill(x, y, x + filled, y + HEIGHT, COLOR_MANA);
             // Светлая полоска сверху даёт объём без единой текстуры.
-            context.fill(X, Y, X + filled, Y + 3, COLOR_MANA_TOP);
+            context.fill(x, y, x + filled, y + 3, COLOR_MANA_TOP);
         }
 
         Text label = Text.literal((int) ClientSpellState.mana() + " / " + ClientSpellState.maxMana());
-        int textX = X + (WIDTH - client.textRenderer.getWidth(label)) / 2;
-        context.drawText(client.textRenderer, label, textX, Y + 2, COLOR_TEXT, true);
+        int textX = x + (WIDTH - client.textRenderer.getWidth(label)) / 2;
+        context.drawText(client.textRenderer, label, textX, y + 2, COLOR_TEXT, true);
     }
 
     private void drawSelectedSpell(DrawContext context, MinecraftClient client) {
         Spell spell = ClientSpellState.selectedSpell();
-        int y = Y + HEIGHT + 4;
+        int x = ArcanumConfig.HUD_X;
+        int y = ArcanumConfig.HUD_Y + HEIGHT + 4;
 
         if (spell == null) {
             context.drawText(client.textRenderer,
                     Text.translatable("hud.arcanum.no_spell").formatted(Formatting.DARK_GRAY),
-                    X, y, 0xFF8A8A8A, true);
+                    x, y, 0xFF8A8A8A, true);
             return;
         }
 
-        context.drawText(client.textRenderer, spell.displayName(), X, y, spell.school().argb(), true);
+        context.drawText(client.textRenderer, spell.displayName(), x, y, spell.school().argb(), true);
 
         int mastery = ClientSpellState.mastery(spell.id());
         if (mastery > 0) {
             int offset = client.textRenderer.getWidth(spell.displayName()) + 4;
             context.drawText(client.textRenderer, SpellMastery.stars(mastery),
-                    X + offset, y, 0xFFFFD966, true);
+                    x + offset, y, 0xFFFFD966, true);
         }
 
         int cooldown = ClientSpellState.cooldown(spell.id());
         if (cooldown > 0) {
             Text text = Text.translatable("hud.arcanum.cooldown",
                     String.format("%.1f", cooldown / 20.0f)).formatted(Formatting.GRAY);
-            context.drawText(client.textRenderer, text, X, y + 10, 0xFFB0B0B0, true);
+            context.drawText(client.textRenderer, text, x, y + 10, 0xFFB0B0B0, true);
             return;
         }
 
         int cost = (int) spell.manaCost();
         boolean affordable = ClientSpellState.mana() >= cost;
         Text text = Text.translatable("hud.arcanum.cost", cost);
-        context.drawText(client.textRenderer, text, X, y + 10,
+        context.drawText(client.textRenderer, text, x, y + 10,
                 affordable ? 0xFF7FD8FF : 0xFFFF6B6B, true);
     }
 }

@@ -36,6 +36,10 @@ public class Arcanum implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        // Конфигурация читается первой: от неё зависят значения по умолчанию
+        // в данных игрока, которые создаются уже на следующих строках.
+        ArcanumConfig.load();
+
         ModComponents.init();
         ModEffects.init();
         ModBlocks.init();

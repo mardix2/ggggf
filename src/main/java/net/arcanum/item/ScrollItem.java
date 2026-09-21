@@ -62,7 +62,7 @@ public class ScrollItem extends Item {
 
         SpellCasting.Result result = SpellCasting.castFromScroll(player, stack, spell);
         if (!result.ok()) {
-            player.sendMessage(SpellCasting.failureMessage(player, spell, result), true);
+            player.sendMessage(SpellCasting.failureMessage(player, stack, spell, result), true);
             return ActionResult.FAIL;
         }
         stack.decrementUnlessCreative(1, player);

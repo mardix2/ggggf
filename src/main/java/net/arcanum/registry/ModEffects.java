@@ -46,6 +46,14 @@ public final class ModEffects {
     public static final RegistryEntry<StatusEffect> ARCANE_SIGHT =
             register("arcane_sight", StatusEffectCategory.BENEFICIAL, 0xD0A0FF);
 
+    /** Статический заряд от магии бури — топливо для реакции с арканой. */
+    public static final RegistryEntry<StatusEffect> CHARGED =
+            register("charged", StatusEffectCategory.HARMFUL, 0xF2EE8A);
+
+    /** Нестабильность от чистой магии — топливо для реакций света и природы. */
+    public static final RegistryEntry<StatusEffect> DESTABILIZED =
+            register("destabilized", StatusEffectCategory.HARMFUL, 0xC77DFF);
+
     /** Печать безмолвия: цель не может колдовать. */
     public static final RegistryEntry<StatusEffect> SILENCE =
             register("silence", StatusEffectCategory.HARMFUL, 0x4A4A55);

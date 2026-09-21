@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:rune_fire",
+      "count": 2
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:augment_power",
+    "count": 1
+  },
+  "pedestals": 2,
+  "mana": 120
+}

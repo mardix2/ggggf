@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:rune_nature",
+      "count": 2
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    },
+    {
+      "item": "minecraft:arrow",
+      "count": 4
+    }
+  ],
+  "result": {
+    "item": "arcanum:augment_split",
+    "count": 1
+  },
+  "pedestals": 2,
+  "mana": 120
+}

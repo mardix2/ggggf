@@ -16,7 +16,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import model3d as m
-from content import SCHOOLS
+from content import AUGMENTS, SCHOOLS
 from png import Canvas, hex_to_rgb, shade
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -234,6 +234,48 @@ def spellbook():
     ], m.DISPLAY_FLAT)
 
 
+#: Цвет сердцевины у каждой руны-модификатора.
+AUGMENT_COLORS = {
+    "power": "ember",
+    "efficiency": "potion",
+    "haste": "amber",
+    "reach": "school_nature",
+    "split": "crystal",
+    "echo": "moon_light",
+}
+
+
+def augments():
+    """Руна-модификатор: металлический диск с самоцветом в середине.
+
+    Положение — как у плоских предметов: медальон интересен лицевой
+    стороной, а при развороте «по-блочному» виден только его торец.
+    """
+    for name, core in AUGMENT_COLORS.items():
+        save_model("augment_" + name, [
+            *octagon_ring("iron", inner=5.0, outer=13.0, z0=6.8, z1=9.2, width=1.4),
+            m.box(5.0, 5.0, 7.0, 11.0, 11.0, 9.0, "stone_dark"),
+            # Самоцвет крупнее оправы по глубине: иначе с лицевой стороны
+            # его не видно за металлом, и все руны выглядят одинаково.
+            m.box(6.0, 6.0, 6.3, 10.0, 10.0, 9.7, core),
+            m.box(6.6, 8.8, 6.1, 7.6, 9.6, 9.9, "moon_light"),
+        ], m.DISPLAY_FLAT)
+
+
+def grimoire():
+    """Гримуар павшего мага: та же книга, но обгоревшая и с душой внутри."""
+    save_model("fallen_grimoire", [
+        m.box(2.5, 1.5, 3.0, 13.5, 14.5, 5.0, "obsidian"),
+        m.box(3.5, 2.5, 5.0, 12.5, 13.5, 6.5, "parchment_dark"),
+        m.box(2.5, 1.5, 6.5, 13.5, 14.5, 8.5, "obsidian"),
+        m.box(1.8, 1.5, 3.0, 2.5, 14.5, 8.5, "void"),
+        m.box(3.0, 12.4, 8.5, 13.0, 13.2, 8.8, "gold_dark"),
+        m.box(3.0, 2.8, 8.5, 13.0, 3.6, 8.8, "gold_dark"),
+        m.box(6.6, 6.6, 8.5, 9.4, 9.4, 9.4, "soul"),
+        m.box(7.4, 7.4, 9.4, 8.6, 8.6, 10.0, "moon_light"),
+    ], m.DISPLAY_FLAT)
+
+
 def potions():
     display = dict(m.DISPLAY_SMALL)
     display["gui"] = {"rotation": [12, -25, 0], "translation": [0, 0, 0],
@@ -298,6 +340,8 @@ def main():
     runes()
     scrolls()
     spellbook()
+    augments()
+    grimoire()
     potions()
     crystals()
     print("Объёмные модели готовы.")

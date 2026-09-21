@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:rune_shadow",
+      "count": 2
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    },
+    {
+      "item": "arcanum:soul_shard",
+      "count": 2
+    }
+  ],
+  "result": {
+    "item": "arcanum:augment_echo",
+    "count": 1
+  },
+  "pedestals": 2,
+  "mana": 120
+}

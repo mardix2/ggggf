@@ -395,6 +395,8 @@ EFFECT_SIGILS = {
     "blessed": (0xFFF0A0, "light"),
     "arcane_sight": (0xD0A0FF, "storm"),
     "silence": (0x4A4A55, "shadow"),
+    "charged": (0xF2EE8A, "storm"),
+    "destabilized": (0xC77DFF, "arcane"),
 }
 
 

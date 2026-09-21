@@ -74,7 +74,7 @@ public class WandItem extends Item implements ArcaneGear {
         if (result.ok()) {
             return ActionResult.SUCCESS;
         }
-        player.sendMessage(SpellCasting.failureMessage(player, spell, result), true);
+        player.sendMessage(SpellCasting.failureMessage(player, stack, spell, result), true);
         return ActionResult.FAIL;
     }
 }

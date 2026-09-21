@@ -13,10 +13,14 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -59,7 +63,8 @@ public class ArcanumClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(KnownSpellsPayload.ID, (payload, context) ->
                 context.client().execute(() ->
-                        ClientSpellState.setSpells(payload.known(), payload.selected(), payload.casts())));
+                        ClientSpellState.setSpells(payload.known(), payload.selected(),
+                                payload.casts(), payload.favorites())));
 
         ClientPlayNetworking.registerGlobalReceiver(CooldownPayload.ID, (payload, context) ->
                 context.client().execute(() -> ClientSpellState.startCooldown(payload.spell(), payload.ticks())));
@@ -82,7 +87,44 @@ public class ArcanumClient implements ClientModInitializer {
             while (ArcanumKeys.PREV_SPELL.wasPressed()) {
                 cycleSpell(client, -1);
             }
+            tickWheel(client);
         });
+    }
+
+    /**
+     * Колесо живёт, пока клавиша удерживается.
+     *
+     * <p>Состояние клавиши читается напрямую из окна, а не через
+     * {@code KeyBinding.isPressed()}: пока открыт экран, ваниль перестаёт
+     * обновлять привязки, и колесо закрывалось бы сразу после открытия.
+     */
+    private static void tickWheel(MinecraftClient client) {
+        while (ArcanumKeys.SPELL_WHEEL.wasPressed()) {
+            // Событие нажатия нам не нужно — важно только удержание.
+        }
+        boolean held = isHeld(client, ArcanumKeys.SPELL_WHEEL);
+
+        if (client.currentScreen instanceof SpellWheelScreen wheel) {
+            if (!held) {
+                wheel.confirmAndClose();
+            }
+            return;
+        }
+        if (held && client.currentScreen == null) {
+            SpellWheelScreen wheel = new SpellWheelScreen();
+            if (!wheel.isEmpty()) {
+                client.setScreen(wheel);
+            }
+        }
+    }
+
+    private static boolean isHeld(MinecraftClient client, KeyBinding binding) {
+        InputUtil.Key key = KeyBindingHelper.getBoundKeyOf(binding);
+        if (key.getCategory() != InputUtil.Type.KEYSYM || key.getCode() == GLFW.GLFW_KEY_UNKNOWN) {
+            // На кнопке мыши удержание так не прочитать — работаем по нажатию.
+            return binding.isPressed();
+        }
+        return InputUtil.isKeyPressed(client.getWindow().getHandle(), key.getCode());
     }
 
     /** Переключение заклинания без открытия книги. */

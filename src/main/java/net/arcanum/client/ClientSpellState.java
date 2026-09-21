@@ -27,6 +27,7 @@ public final class ClientSpellState {
     private static Optional<Identifier> selected = Optional.empty();
     private static final Map<Identifier, Long> COOLDOWN_END = new HashMap<>();
     private static Map<Identifier, Integer> casts = Map.of();
+    private static List<Identifier> favorites = List.of();
 
     public static void setMana(float value, int max) {
         mana = value;
@@ -46,10 +47,30 @@ public final class ClientSpellState {
     }
 
     public static void setSpells(List<Identifier> knownSpells, Optional<Identifier> selectedSpell,
-                                 Map<Identifier, Integer> castCounts) {
+                                 Map<Identifier, Integer> castCounts,
+                                 List<Identifier> favoriteSpells) {
         known = List.copyOf(knownSpells);
         selected = selectedSpell;
         casts = Map.copyOf(castCounts);
+        favorites = List.copyOf(favoriteSpells);
+    }
+
+    public static boolean isFavorite(Identifier spell) {
+        return favorites.contains(spell);
+    }
+
+    /**
+     * Что показать в колесе быстрого выбора.
+     *
+     * <p>Пока игрок ничего не отметил, колесо показывает первые изученные
+     * заклинания — иначе при первом нажатии он увидел бы пустоту и решил,
+     * что колесо сломано.
+     */
+    public static List<Identifier> wheel() {
+        if (!favorites.isEmpty()) {
+            return favorites;
+        }
+        return known.size() <= 8 ? known : known.subList(0, 8);
     }
 
     public static int casts(Identifier spell) {
@@ -111,6 +132,7 @@ public final class ClientSpellState {
         known = List.of();
         selected = Optional.empty();
         casts = Map.of();
+        favorites = List.of();
         COOLDOWN_END.clear();
     }
 }

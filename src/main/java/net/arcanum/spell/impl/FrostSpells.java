@@ -148,7 +148,7 @@ public final class FrostSpells {
                 .type(SpellCastType.TARGET)
                 .tier(3).cost(45.0f).cooldown(160)
                 .action(ctx -> {
-                    LivingEntity target = SpellUtil.raycastEntity(ctx.caster(), 24.0);
+                    LivingEntity target = SpellUtil.raycastEntity(ctx, 24.0);
                     if (target == null) {
                         return false;
                     }
@@ -181,7 +181,7 @@ public final class FrostSpells {
                 .type(SpellCastType.LINGERING)
                 .tier(4).cost(100.0f).cooldown(600)
                 .action(ctx -> {
-                    Vec3d center = SpellUtil.aimPoint(ctx.caster(), 24.0);
+                    Vec3d center = SpellUtil.aimPoint(ctx, 24.0);
                     int duration = 12 * 20;
                     Fx.sound(ctx.world(), center, SoundEvents.ENTITY_PLAYER_HURT_FREEZE, 1.6f, 0.6f);
 

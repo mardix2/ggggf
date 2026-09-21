@@ -13,11 +13,13 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Сервер → клиент: список изученных заклинаний, выбранное и счётчики
- * применений (из них клиент сам считает уровень мастерства).
+ * Сервер → клиент: список изученных заклинаний, выбранное, счётчики
+ * применений (из них клиент сам считает уровень мастерства) и избранное
+ * для колеса быстрого выбора.
  */
 public record KnownSpellsPayload(List<Identifier> known, Optional<Identifier> selected,
-                                 Map<Identifier, Integer> casts) implements CustomPayload {
+                                 Map<Identifier, Integer> casts,
+                                 List<Identifier> favorites) implements CustomPayload {
 
     public static final CustomPayload.Id<KnownSpellsPayload> ID =
             new CustomPayload.Id<>(Arcanum.id("known_spells"));
@@ -27,6 +29,7 @@ public record KnownSpellsPayload(List<Identifier> known, Optional<Identifier> se
             PacketCodecs.optional(Identifier.PACKET_CODEC), KnownSpellsPayload::selected,
             PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, PacketCodecs.VAR_INT),
             KnownSpellsPayload::casts,
+            Identifier.PACKET_CODEC.collect(PacketCodecs.toList()), KnownSpellsPayload::favorites,
             KnownSpellsPayload::new);
 
     @Override

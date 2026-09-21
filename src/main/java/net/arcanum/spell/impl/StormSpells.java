@@ -62,7 +62,7 @@ public final class StormSpells {
                 .type(SpellCastType.TARGET)
                 .tier(2).cost(30.0f).cooldown(70)
                 .action(ctx -> {
-                    LivingEntity first = SpellUtil.raycastEntity(ctx.caster(), 24.0);
+                    LivingEntity first = SpellUtil.raycastEntity(ctx, 24.0);
                     if (first == null) {
                         return false;
                     }
@@ -102,7 +102,7 @@ public final class StormSpells {
                 .type(SpellCastType.AREA)
                 .tier(3).cost(55.0f).cooldown(200)
                 .action(ctx -> {
-                    Vec3d target = SpellUtil.aimPoint(ctx.caster(), 32.0);
+                    Vec3d target = SpellUtil.aimPoint(ctx, 32.0);
                     ServerWorld world = ctx.world();
 
                     LightningEntity bolt = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.TRIGGERED);
@@ -148,7 +148,7 @@ public final class StormSpells {
                 .type(SpellCastType.LINGERING)
                 .tier(2).cost(40.0f).cooldown(220)
                 .action(ctx -> {
-                    Vec3d center = SpellUtil.aimPoint(ctx.caster(), 20.0);
+                    Vec3d center = SpellUtil.aimPoint(ctx, 20.0);
                     int duration = 8 * 20;
                     Fx.sound(ctx.world(), center, SoundEvents.BLOCK_BEACON_AMBIENT, 1.0f, 1.6f);
 

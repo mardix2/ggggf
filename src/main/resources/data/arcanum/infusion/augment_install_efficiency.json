@@ -1,0 +1,16 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:augment_efficiency",
+      "count": 1
+    },
+    {
+      "item": "arcanum:arcane_dust",
+      "count": 2
+    }
+  ],
+  "pedestals": 2,
+  "mana": 150,
+  "requires_wand": true,
+  "add_augment": "efficiency"
+}

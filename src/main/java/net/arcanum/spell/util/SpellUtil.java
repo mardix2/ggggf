@@ -47,12 +47,16 @@ public final class SpellUtil {
     }
 
     /**
-     * Существо в прицеле.
+     * Существо в прицеле у произвольного игрока.
+     *
+     * <p>Заклинаниям нужен вариант с {@link SpellContext} — он учитывает
+     * руну дальнобойности. Два имени вместо перегрузки взяты намеренно:
+     * перегрузка по первому параметру тут только запутывает.
      *
      * <p>Реализовано вручную через пересечение хитбоксов с лучом взгляда —
      * так поведение не зависит от версии вспомогательных классов ванили.
      */
-    public static LivingEntity raycastEntity(PlayerEntity player, double range) {
+    public static LivingEntity raycastEntityFrom(PlayerEntity player, double range) {
         Vec3d start = player.getEyePos();
         Vec3d direction = player.getRotationVec(1.0f);
         Vec3d end = start.add(direction.multiply(range));
@@ -80,9 +84,19 @@ public final class SpellUtil {
         return best;
     }
 
+    /** Цель в прицеле с поправкой на руну дальнобойности. */
+    public static LivingEntity raycastEntity(SpellContext ctx, double baseRange) {
+        return raycastEntityFrom(ctx.caster(), ctx.reach(baseRange));
+    }
+
+    /** Точка прицела с поправкой на руну дальнобойности. */
+    public static Vec3d aimPoint(SpellContext ctx, double baseRange) {
+        return aimPointFrom(ctx.caster(), ctx.reach(baseRange));
+    }
+
     /** Точка, куда «смотрит» заклинатель: существо, блок или конец луча. */
-    public static Vec3d aimPoint(PlayerEntity player, double range) {
-        LivingEntity target = raycastEntity(player, range);
+    public static Vec3d aimPointFrom(PlayerEntity player, double range) {
+        LivingEntity target = raycastEntityFrom(player, range);
         if (target != null) {
             return target.getPos().add(0.0, target.getHeight() * 0.5, 0.0);
         }
@@ -142,11 +156,21 @@ public final class SpellUtil {
     //  Воздействие
     // ------------------------------------------------------------------
 
-    /** Магический урон с привязкой к заклинателю (работает статистика и агро). */
+    /**
+     * Магический урон с привязкой к заклинателю (работает статистика и агро).
+     *
+     * <p>Здесь же срабатывают реакции школ: это единственная точка, через
+     * которую заклинания бьют по целям, и держать логику меток в одном
+     * месте надёжнее, чем вспоминать про неё в каждом заклинании.
+     */
     public static boolean damage(SpellContext ctx, LivingEntity target, float amount) {
-        return target.damage(ctx.world(),
+        boolean hit = target.damage(ctx.world(),
                 ctx.world().getDamageSources().indirectMagic(ctx.caster(), ctx.caster()),
                 amount);
+        if (hit) {
+            SpellReactions.onHit(ctx, target);
+        }
+        return hit;
     }
 
     /** Урон от огня: поджигает и бьёт магией — так работает и в воде, и по нежити. */
@@ -241,14 +265,24 @@ public final class SpellUtil {
             float speed, float gravity, float divergence,
             net.arcanum.entity.SpellProjectileEntity.Impact impact) {
 
-        net.arcanum.entity.SpellProjectileEntity projectile =
-                new net.arcanum.entity.SpellProjectileEntity(ctx.world(), ctx.caster(),
-                        new net.minecraft.item.ItemStack(visual));
-        projectile.configure(school, trail, gravity, impact);
-        projectile.setVelocity(ctx.caster(), ctx.caster().getPitch(), ctx.caster().getYaw(),
-                0.0f, speed, divergence);
-        ctx.world().spawnEntity(projectile);
-        return projectile;
+        net.arcanum.entity.SpellProjectileEntity first = null;
+        // Руна расщепления добавляет снаряды; чтобы они не летели одной
+        // линией, лишним добавляется разброс.
+        int shots = 1 + Math.max(0, ctx.extraShots());
+        for (int index = 0; index < shots; index++) {
+            net.arcanum.entity.SpellProjectileEntity projectile =
+                    new net.arcanum.entity.SpellProjectileEntity(ctx.world(), ctx.caster(),
+                            new net.minecraft.item.ItemStack(visual));
+            projectile.configure(school, trail, gravity, impact);
+            float spread = index == 0 ? divergence : Math.max(divergence, 8.0f);
+            projectile.setVelocity(ctx.caster(), ctx.caster().getPitch(), ctx.caster().getYaw(),
+                    0.0f, speed, spread);
+            ctx.world().spawnEntity(projectile);
+            if (first == null) {
+                first = projectile;
+            }
+        }
+        return first;
     }
 
     /**

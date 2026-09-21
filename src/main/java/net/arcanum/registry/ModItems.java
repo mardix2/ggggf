@@ -2,6 +2,8 @@ package net.arcanum.registry;
 
 import net.arcanum.Arcanum;
 import net.arcanum.item.ArcaneRobeItem;
+import net.arcanum.item.AugmentItem;
+import net.arcanum.item.FallenGrimoireItem;
 import net.arcanum.item.FocusItem;
 import net.arcanum.item.ManaCrystalItem;
 import net.arcanum.item.ManaGemItem;
@@ -9,6 +11,7 @@ import net.arcanum.item.ManaPotionItem;
 import net.arcanum.item.ScrollItem;
 import net.arcanum.item.SpellbookItem;
 import net.arcanum.item.WandItem;
+import net.arcanum.spell.Augment;
 import net.arcanum.spell.SpellSchool;
 import net.minecraft.item.Item;
 import net.minecraft.item.equipment.EquipmentType;
@@ -71,6 +74,18 @@ public final class ModItems {
         }
     }
 
+    // ---- руны-модификаторы ----------------------------------------------
+
+    public static final Map<Augment, Item> AUGMENTS = new EnumMap<>(Augment.class);
+
+    static {
+        for (Augment augment : Augment.values()) {
+            AUGMENTS.put(augment, register(augment.itemName(),
+                    settings -> new AugmentItem(augment, settings),
+                    new Item.Settings().maxCount(8).rarity(Rarity.UNCOMMON)));
+        }
+    }
+
     // ---- запас маны ----------------------------------------------------
 
     public static final Item DIM_MANA_CRYSTAL = register("dim_mana_crystal", Item::new,
@@ -119,6 +134,9 @@ public final class ModItems {
 
     public static final Item SPELL_SCROLL = register("spell_scroll", ScrollItem::new,
             new Item.Settings().maxCount(16));
+
+    public static final Item FALLEN_GRIMOIRE = register("fallen_grimoire", FallenGrimoireItem::new,
+            new Item.Settings().maxCount(1).rarity(Rarity.EPIC));
 
     // ---- мантия чародея -------------------------------------------------
 

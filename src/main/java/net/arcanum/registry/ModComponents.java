@@ -2,6 +2,7 @@ package net.arcanum.registry;
 
 import com.mojang.serialization.Codec;
 import net.arcanum.Arcanum;
+import net.arcanum.spell.Augment;
 import net.minecraft.component.ComponentType;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
@@ -31,6 +32,12 @@ public final class ModComponents {
     /** Заклинание, записанное в свиток. */
     public static final ComponentType<Identifier> SCROLL_SPELL = register("scroll_spell",
             builder -> builder.codec(Identifier.CODEC).packetCodec(Identifier.PACKET_CODEC));
+
+    /** Руны-модификаторы, впечатанные в посох. */
+    public static final ComponentType<List<Augment>> AUGMENTS = register("augments",
+            builder -> builder
+                    .codec(Augment.CODEC.listOf())
+                    .packetCodec(Augment.PACKET_CODEC.collect(PacketCodecs.toList())));
 
     /** Мана, запасённая внутри предмета (кристалл маны). */
     public static final ComponentType<Integer> STORED_MANA = register("stored_mana",

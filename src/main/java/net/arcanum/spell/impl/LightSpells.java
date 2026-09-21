@@ -49,7 +49,7 @@ public final class LightSpells {
                 .type(SpellCastType.TARGET)
                 .tier(1).cost(16.0f).cooldown(30)
                 .action(ctx -> {
-                    LivingEntity target = SpellUtil.raycastEntity(ctx.caster(), 24.0);
+                    LivingEntity target = SpellUtil.raycastEntity(ctx, 24.0);
                     if (target == null) {
                         return false;
                     }

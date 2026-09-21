@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:rune_arcane",
+      "count": 2
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    },
+    {
+      "item": "minecraft:lapis_lazuli",
+      "count": 3
+    }
+  ],
+  "result": {
+    "item": "arcanum:augment_efficiency",
+    "count": 1
+  },
+  "pedestals": 2,
+  "mana": 120
+}

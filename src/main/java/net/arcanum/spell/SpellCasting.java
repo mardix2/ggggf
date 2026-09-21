@@ -57,7 +57,8 @@ public final class SpellCasting {
      * Готовое сообщение об ошибке — с подставленными числами
      * (секунды перезарядки, требуемая ступень, нехватка маны).
      */
-    public static Text failureMessage(ServerPlayerEntity player, Spell spell, Result result) {
+    public static Text failureMessage(ServerPlayerEntity player, ItemStack tool,
+                                      Spell spell, Result result) {
         if (spell == null) {
             return result.message();
         }
@@ -66,9 +67,7 @@ public final class SpellCasting {
                     String.format("%.1f", SpellCooldowns.remaining(player, spell.id()) / 20.0f));
             case TIER_TOO_LOW -> result.message(spell.tier());
             case NOT_ENOUGH_MANA -> result.message(
-                    Math.round(spell.manaCost() * ManaManager.costMultiplier(player)
-                            * SpellMastery.costFactor(
-                                    SpellMastery.level(ManaManager.data(player).casts(spell.id())))),
+                    Math.round(manaCost(player, tool, spell)),
                     (int) ManaManager.current(player));
             case NOT_LEARNED -> result.message(spell.displayName());
             default -> result.message();
@@ -114,17 +113,18 @@ public final class SpellCasting {
 
         int casts = ManaManager.data(player).casts(spell.id());
         int mastery = SpellMastery.level(casts);
+        List<Augment> augments = Augments.of(tool);
 
-        float cost = spell.manaCost() * ManaManager.costMultiplier(player)
-                * SpellMastery.costFactor(mastery);
+        float cost = manaCost(player, tool, spell);
         if (!ManaManager.has(player, cost)) {
             return Result.NOT_ENOUGH_MANA;
         }
 
         ServerWorld world = (ServerWorld) player.getWorld();
         float power = 1.0f + ManaManager.powerBonus(player, spell.school())
-                + SpellMastery.powerBonus(mastery);
-        SpellContext ctx = new SpellContext(world, player, tool, power, tier);
+                + SpellMastery.powerBonus(mastery) + Augments.powerBonus(augments);
+        SpellContext ctx = new SpellContext(world, player, tool, spell, power,
+                Augments.rangeMultiplier(augments), tier, Augments.extraShots(augments));
 
         if (!spell.cast(ctx)) {
             // Заклинание само решило, что применять его не к чему — мана цела.
@@ -133,12 +133,36 @@ public final class SpellCasting {
 
         ManaManager.consume(player, cost);
         int cooldown = Math.round(spell.cooldownTicks() * ManaManager.cooldownMultiplier(player)
-                * SpellMastery.cooldownFactor(mastery));
+                * SpellMastery.cooldownFactor(mastery) * Augments.cooldownMultiplier(augments));
         SpellCooldowns.start(player, spell.id(), cooldown);
         Fx.soundVaried(world, player.getPos(), SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 0.5f, 1.2f);
 
+        echo(ctx, augments);
         recordMastery(player, spell, casts, mastery);
         return Result.OK;
+    }
+
+    /** Итоговая стоимость с учётом снаряжения, мастерства и рун посоха. */
+    public static float manaCost(ServerPlayerEntity player, ItemStack tool, Spell spell) {
+        int mastery = SpellMastery.level(ManaManager.data(player).casts(spell.id()));
+        return spell.manaCost()
+                * ManaManager.costMultiplier(player)
+                * SpellMastery.costFactor(mastery)
+                * Augments.costMultiplier(Augments.of(tool));
+    }
+
+    /**
+     * Руна эха: иногда заклинание срабатывает вторично и бесплатно.
+     *
+     * <p>Вызывается напрямую {@code spell.cast}, а не весь конвейер, —
+     * иначе эхо могло бы породить эхо и так до переполнения стека.
+     */
+    private static void echo(SpellContext ctx, List<Augment> augments) {
+        if (!Augments.hasEcho(augments) || ctx.world().getRandom().nextFloat() >= Augment.ECHO_CHANCE) {
+            return;
+        }
+        Fx.sound(ctx.world(), ctx.caster().getPos(), SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.6f, 2.0f);
+        ctx.spell().cast(ctx);
     }
 
     /**
@@ -179,7 +203,9 @@ public final class SpellCasting {
 
         ServerWorld world = (ServerWorld) player.getWorld();
         float power = 1.0f + ManaManager.powerBonus(player, spell.school());
-        if (!spell.cast(new SpellContext(world, player, scroll, power, spell.tier()))) {
+        SpellContext ctx = new SpellContext(world, player, scroll, spell, power,
+                1.0f, spell.tier(), 0);
+        if (!spell.cast(ctx)) {
             return Result.FIZZLED;
         }
         ManaManager.consume(player, cost);

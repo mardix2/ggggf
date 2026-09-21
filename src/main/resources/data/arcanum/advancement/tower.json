@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "arcanum:fallen_grimoire"
+    },
+    "title": {
+      "translate": "advancements.arcanum.tower.title"
+    },
+    "description": {
+      "translate": "advancements.arcanum.tower.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "grimoire": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanum:fallen_grimoire"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "arcanum:altar"
+}
