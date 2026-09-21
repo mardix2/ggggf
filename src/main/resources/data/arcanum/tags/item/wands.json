@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "arcanum:apprentice_wand",
+    "arcanum:adept_staff",
+    "arcanum:archmage_staff",
+    "arcanum:eldritch_scepter"
+  ]
+}

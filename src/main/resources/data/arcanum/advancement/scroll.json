@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "arcanum:spell_scroll"
+    },
+    "title": {
+      "translate": "advancements.arcanum.scroll.title"
+    },
+    "description": {
+      "translate": "advancements.arcanum.scroll.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "scroll": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanum:spell_scroll"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "arcanum:altar"
+}

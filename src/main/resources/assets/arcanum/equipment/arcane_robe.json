@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "arcanum:arcane_robe"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "arcanum:arcane_robe"
+      }
+    ]
+  }
+}

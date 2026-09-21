@@ -1,0 +1,21 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    },
+    {
+      "item": "minecraft:copper_ingot",
+      "count": 2
+    },
+    {
+      "item": "arcanum:arcane_dust",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:rune_storm",
+    "count": 1
+  },
+  "mana": 50
+}

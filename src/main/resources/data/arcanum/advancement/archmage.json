@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "arcanum:eldritch_scepter"
+    },
+    "title": {
+      "translate": "advancements.arcanum.archmage.title"
+    },
+    "description": {
+      "translate": "advancements.arcanum.archmage.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "scepter": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanum:eldritch_scepter"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "arcanum:altar"
+}

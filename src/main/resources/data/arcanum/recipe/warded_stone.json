@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DOD",
+    "OCO",
+    "DOD"
+  ],
+  "key": {
+    "D": "minecraft:deepslate_bricks",
+    "O": "minecraft:obsidian",
+    "C": "arcanum:arcane_crystal"
+  },
+  "result": {
+    "id": "arcanum:warded_stone",
+    "count": 4
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:rune_shadow",
+      "count": 1
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 1
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:focus_shadow",
+    "count": 1
+  },
+  "pedestals": 2,
+  "mana": 100
+}

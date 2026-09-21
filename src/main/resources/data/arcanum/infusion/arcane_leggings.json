@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "minecraft:leather_leggings",
+      "count": 1
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 3
+    },
+    {
+      "item": "arcanum:lunar_essence",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:arcane_leggings",
+    "count": 1
+  },
+  "pedestals": 2,
+  "mana": 180
+}

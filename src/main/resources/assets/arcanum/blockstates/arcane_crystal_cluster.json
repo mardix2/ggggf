@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "arcanum:block/arcane_crystal_cluster"
+    },
+    "facing=down": {
+      "model": "arcanum:block/arcane_crystal_cluster",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "arcanum:block/arcane_crystal_cluster",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "arcanum:block/arcane_crystal_cluster",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "arcanum:block/arcane_crystal_cluster",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "arcanum:block/arcane_crystal_cluster",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

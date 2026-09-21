@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "minecraft:paper",
+    "minecraft:paper",
+    "arcanum:arcane_dust"
+  ],
+  "result": {
+    "id": "arcanum:blank_scroll",
+    "count": 3
+  }
+}

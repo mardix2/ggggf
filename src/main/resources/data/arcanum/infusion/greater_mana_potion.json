@@ -1,0 +1,17 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:mana_potion",
+      "count": 2
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:greater_mana_potion",
+    "count": 1
+  },
+  "mana": 60
+}

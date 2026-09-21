@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "arcanum",
+  "version": "${version}",
+  "name": "Arcanum Mysticum",
+  "description": "Обширный мод на магию: мана, семь школ, 43 заклинания, посохи, мантии, алтарь превращения и собственная руда.",
+  "authors": [
+    "Arcanum Mysticum"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/arcanum/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.arcanum.Arcanum"
+    ],
+    "client": [
+      "net.arcanum.client.ArcanumClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

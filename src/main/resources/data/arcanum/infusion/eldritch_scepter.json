@@ -1,0 +1,26 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:archmage_staff",
+      "count": 1
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 6
+    },
+    {
+      "item": "minecraft:nether_star",
+      "count": 1
+    },
+    {
+      "item": "arcanum:soul_shard",
+      "count": 4
+    }
+  ],
+  "result": {
+    "item": "arcanum:eldritch_scepter",
+    "count": 1
+  },
+  "pedestals": 6,
+  "mana": 600
+}

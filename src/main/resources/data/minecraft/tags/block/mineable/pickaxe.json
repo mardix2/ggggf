@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "arcanum:arcane_crystal_ore",
+    "arcanum:deepslate_arcane_crystal_ore",
+    "arcanum:arcane_crystal_block",
+    "arcanum:arcane_crystal_cluster",
+    "arcanum:infusion_altar",
+    "arcanum:mana_font",
+    "arcanum:teleport_anchor",
+    "arcanum:arcane_pedestal",
+    "arcanum:arcane_lamp",
+    "arcanum:warded_stone",
+    "arcanum:runestone_fire",
+    "arcanum:runestone_frost",
+    "arcanum:runestone_storm",
+    "arcanum:runestone_arcane",
+    "arcanum:runestone_nature",
+    "arcanum:runestone_shadow",
+    "arcanum:runestone_light"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SCS",
+    " S ",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:stone_bricks",
+    "C": "arcanum:arcane_crystal"
+  },
+  "result": {
+    "id": "arcanum:arcane_pedestal",
+    "count": 2
+  }
+}

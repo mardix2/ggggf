@@ -1,0 +1,74 @@
+{
+  "display": {
+    "icon": {
+      "id": "arcanum:arcane_robe"
+    },
+    "title": {
+      "translate": "advancements.arcanum.robe.title"
+    },
+    "description": {
+      "translate": "advancements.arcanum.robe.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "hood": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanum:arcane_hood"
+          }
+        ]
+      }
+    },
+    "robe": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanum:arcane_robe"
+          }
+        ]
+      }
+    },
+    "leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanum:arcane_leggings"
+          }
+        ]
+      }
+    },
+    "boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanum:arcane_boots"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "arcanum:altar",
+  "requirements": [
+    [
+      "hood"
+    ],
+    [
+      "robe"
+    ],
+    [
+      "leggings"
+    ],
+    [
+      "boots"
+    ]
+  ]
+}

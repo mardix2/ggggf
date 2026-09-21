@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "arcanum:rune_fire",
+    "arcanum:rune_frost",
+    "arcanum:rune_storm",
+    "arcanum:rune_arcane",
+    "arcanum:rune_nature",
+    "arcanum:rune_shadow",
+    "arcanum:rune_light"
+  ]
+}

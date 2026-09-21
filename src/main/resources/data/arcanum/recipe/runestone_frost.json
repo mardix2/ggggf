@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "SRS",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:stone",
+    "R": "arcanum:rune_frost"
+  },
+  "result": {
+    "id": "arcanum:runestone_frost",
+    "count": 8
+  }
+}

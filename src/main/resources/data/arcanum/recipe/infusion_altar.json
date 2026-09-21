@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "C C",
+    "SGS",
+    "SSS"
+  ],
+  "key": {
+    "C": "arcanum:arcane_crystal",
+    "S": "minecraft:stone_bricks",
+    "G": "minecraft:gold_ingot"
+  },
+  "result": {
+    "id": "arcanum:infusion_altar",
+    "count": 1
+  }
+}

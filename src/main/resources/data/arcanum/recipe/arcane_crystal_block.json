@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CCC",
+    "CCC"
+  ],
+  "key": {
+    "C": "arcanum:arcane_crystal"
+  },
+  "result": {
+    "id": "arcanum:arcane_crystal_block",
+    "count": 1
+  }
+}

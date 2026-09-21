@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model": "arcanum:block/arcane_lamp_on"
+    },
+    "lit=false": {
+      "model": "arcanum:block/arcane_lamp_off"
+    }
+  }
+}

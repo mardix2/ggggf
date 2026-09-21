@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:apprentice_wand",
+      "count": 1
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 2
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:adept_staff",
+    "count": 1
+  },
+  "pedestals": 2,
+  "mana": 120
+}

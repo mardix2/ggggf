@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "arcanum:arcane_crystal_block"
+  ],
+  "result": {
+    "id": "arcanum:arcane_crystal",
+    "count": 9
+  }
+}

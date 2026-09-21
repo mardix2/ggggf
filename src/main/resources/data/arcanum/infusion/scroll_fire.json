@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:blank_scroll",
+      "count": 1
+    },
+    {
+      "item": "arcanum:rune_fire",
+      "count": 1
+    },
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:spell_scroll",
+    "count": 1
+  },
+  "pedestals": 1,
+  "mana": 60,
+  "scroll_school": "fire"
+}

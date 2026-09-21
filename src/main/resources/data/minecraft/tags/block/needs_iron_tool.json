@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "arcanum:warded_stone",
+    "arcanum:infusion_altar",
+    "arcanum:mana_font",
+    "arcanum:teleport_anchor"
+  ]
+}

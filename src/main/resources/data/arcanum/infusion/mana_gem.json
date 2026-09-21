@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 4
+    },
+    {
+      "item": "minecraft:diamond",
+      "count": 1
+    },
+    {
+      "item": "arcanum:lunar_essence",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:mana_gem",
+    "count": 1
+  },
+  "pedestals": 4,
+  "mana": 350
+}

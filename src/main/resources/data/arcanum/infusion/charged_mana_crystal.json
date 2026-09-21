@@ -1,0 +1,17 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:dim_mana_crystal",
+      "count": 1
+    },
+    {
+      "item": "arcanum:arcane_dust",
+      "count": 2
+    }
+  ],
+  "result": {
+    "item": "arcanum:charged_mana_crystal",
+    "count": 1
+  },
+  "mana": 120
+}

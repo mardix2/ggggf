@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "arcanum:runestone_fire",
+    "arcanum:runestone_frost",
+    "arcanum:runestone_storm",
+    "arcanum:runestone_arcane",
+    "arcanum:runestone_nature",
+    "arcanum:runestone_shadow",
+    "arcanum:runestone_light"
+  ]
+}

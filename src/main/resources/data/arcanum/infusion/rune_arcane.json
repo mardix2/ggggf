@@ -1,0 +1,21 @@
+{
+  "inputs": [
+    {
+      "item": "arcanum:infused_crystal",
+      "count": 1
+    },
+    {
+      "item": "minecraft:amethyst_shard",
+      "count": 2
+    },
+    {
+      "item": "arcanum:arcane_dust",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "arcanum:rune_arcane",
+    "count": 1
+  },
+  "mana": 50
+}

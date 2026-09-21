@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CGC",
+    "GEG",
+    "CGC"
+  ],
+  "key": {
+    "C": "arcanum:arcane_crystal",
+    "G": "minecraft:gold_ingot",
+    "E": "minecraft:ender_pearl"
+  },
+  "result": {
+    "id": "arcanum:teleport_anchor",
+    "count": 1
+  }
+}

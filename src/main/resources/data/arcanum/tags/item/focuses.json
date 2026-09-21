@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "arcanum:focus_fire",
+    "arcanum:focus_frost",
+    "arcanum:focus_storm",
+    "arcanum:focus_arcane",
+    "arcanum:focus_nature",
+    "arcanum:focus_shadow",
+    "arcanum:focus_light"
+  ]
+}

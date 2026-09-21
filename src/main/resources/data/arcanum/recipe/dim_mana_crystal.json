@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "arcanum:arcane_crystal",
+    "arcanum:arcane_dust",
+    "arcanum:arcane_dust"
+  ],
+  "result": {
+    "id": "arcanum:dim_mana_crystal",
+    "count": 1
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "arcanum:infusion_altar"
+    },
+    "title": {
+      "translate": "advancements.arcanum.altar.title"
+    },
+    "description": {
+      "translate": "advancements.arcanum.altar.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "altar": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanum:infusion_altar"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "arcanum:wand"
+}

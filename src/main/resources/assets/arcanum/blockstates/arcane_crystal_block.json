@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "arcanum:block/arcane_crystal_block"
+    }
+  }
+}

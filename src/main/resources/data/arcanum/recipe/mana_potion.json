@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:glass_bottle",
+    "arcanum:arcane_dust",
+    "minecraft:lapis_lazuli"
+  ],
+  "result": {
+    "id": "arcanum:mana_potion",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "CGC",
+    " C "
+  ],
+  "key": {
+    "C": "arcanum:arcane_crystal",
+    "G": "minecraft:glowstone"
+  },
+  "result": {
+    "id": "arcanum:arcane_lamp",
+    "count": 2
+  }
+}
