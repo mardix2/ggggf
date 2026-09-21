@@ -3,6 +3,7 @@ package net.arcanum.client;
 import net.arcanum.registry.ModItems;
 import net.arcanum.spell.Spell;
 import net.arcanum.spell.SpellRegistry;
+import net.arcanum.spell.SpellMastery;
 import net.arcanum.spell.SpellSchool;
 import net.arcanum.net.payload.SelectSpellPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -170,6 +171,15 @@ public class SpellbookScreen extends Screen {
                 Text.literal(String.valueOf((int) detail.manaCost())));
         line = drawStat(context, x, line, "screen.arcanum.stat.cooldown",
                 Text.literal(String.format("%.1f", detail.cooldownTicks() / 20.0f) + " c"));
+
+        int mastery = ClientSpellState.mastery(detail.id());
+        line = drawStat(context, x, line, "screen.arcanum.stat.mastery",
+                SpellMastery.stars(mastery));
+        int next = SpellMastery.nextThreshold(mastery);
+        if (next > 0) {
+            line = drawStat(context, x, line, "screen.arcanum.stat.progress",
+                    Text.literal(ClientSpellState.casts(detail.id()) + " / " + next));
+        }
 
         line += 6;
         for (var text : textRenderer.wrapLines(detail.description(), panelWidth)) {

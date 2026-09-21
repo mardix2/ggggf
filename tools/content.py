@@ -75,6 +75,30 @@ BLOCKS = {
 for _school, (_ru, _en) in SCHOOL_NAMES.items():
     BLOCKS["runestone_" + _school] = ("Рунный камень: " + _ru, _en + " Runestone", "cube")
 
+# Предметы с объёмными моделями (см. tools/gen_models3d.py).
+# Плоский спрайт им не нужен — исключение только руны, чей глиф
+# используется как лицевая грань объёмной таблички.
+ITEMS_3D = {
+    "apprentice_wand", "adept_staff", "archmage_staff", "eldritch_scepter",
+    "spellbook", "blank_scroll", "spell_scroll",
+    "arcane_crystal", "infused_crystal", "dim_mana_crystal", "charged_mana_crystal",
+    "mana_gem", "soul_shard", "lunar_essence",
+    "mana_potion", "greater_mana_potion",
+} | {"focus_" + _s for _s in SCHOOLS} | {"rune_" + _s for _s in SCHOOLS}
+
+#: Предметы, которым нужен обычный спрайт 16x16.
+SPRITE_ITEMS = (set(ITEMS) - ITEMS_3D) | {"rune_" + _s for _s in SCHOOLS}
+
+#: Блоки с пульсирующей анимацией текстуры.
+ANIMATED_BLOCK_TEXTURES = [
+    "arcane_crystal_block",
+    "arcane_crystal_cluster",
+    "mana_font_top",
+    "teleport_anchor_top",
+    "arcane_lamp_on",
+    "moonpetal",
+] + ["runestone_" + _s for _s in SCHOOLS]
+
 EFFECTS = {
     "mana_surge": ("Прилив маны", "Mana Surge"),
     "mana_burn": ("Выжигание маны", "Mana Burn"),

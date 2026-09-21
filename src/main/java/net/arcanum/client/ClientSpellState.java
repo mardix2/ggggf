@@ -1,6 +1,7 @@
 package net.arcanum.client;
 
 import net.arcanum.spell.Spell;
+import net.arcanum.spell.SpellMastery;
 import net.arcanum.spell.SpellRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
@@ -25,6 +26,7 @@ public final class ClientSpellState {
     private static List<Identifier> known = List.of();
     private static Optional<Identifier> selected = Optional.empty();
     private static final Map<Identifier, Long> COOLDOWN_END = new HashMap<>();
+    private static Map<Identifier, Integer> casts = Map.of();
 
     public static void setMana(float value, int max) {
         mana = value;
@@ -43,9 +45,19 @@ public final class ClientSpellState {
         return Math.min(1.0f, mana / maxMana);
     }
 
-    public static void setSpells(List<Identifier> knownSpells, Optional<Identifier> selectedSpell) {
+    public static void setSpells(List<Identifier> knownSpells, Optional<Identifier> selectedSpell,
+                                 Map<Identifier, Integer> castCounts) {
         known = List.copyOf(knownSpells);
         selected = selectedSpell;
+        casts = Map.copyOf(castCounts);
+    }
+
+    public static int casts(Identifier spell) {
+        return casts.getOrDefault(spell, 0);
+    }
+
+    public static int mastery(Identifier spell) {
+        return SpellMastery.level(casts(spell));
     }
 
     public static List<Identifier> known() {
@@ -98,6 +110,7 @@ public final class ClientSpellState {
         maxMana = 1;
         known = List.of();
         selected = Optional.empty();
+        casts = Map.of();
         COOLDOWN_END.clear();
     }
 }

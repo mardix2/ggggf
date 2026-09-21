@@ -6,7 +6,9 @@ import net.arcanum.ArcanumConfig;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -16,29 +18,48 @@ import java.util.Optional;
  * <p>Хранится как Fabric-attachment, поэтому это неизменяемая запись:
  * любое изменение создаёт новый экземпляр и кладётся обратно через
  * {@link ManaManager#set}.
+ *
+ * @param casts сколько раз игрок применил каждое заклинание — из этого
+ *              считается мастерство ({@link net.arcanum.spell.SpellMastery})
  */
-public record ManaData(float mana, int attunement, List<Identifier> known, Optional<Identifier> selected) {
+public record ManaData(float mana, int attunement, List<Identifier> known,
+                       Optional<Identifier> selected, Map<Identifier, Integer> casts) {
 
     public static final ManaData DEFAULT =
-            new ManaData(ArcanumConfig.BASE_MANA, 0, List.of(), Optional.empty());
+            new ManaData(ArcanumConfig.BASE_MANA, 0, List.of(), Optional.empty(), Map.of());
 
     public static final Codec<ManaData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.FLOAT.optionalFieldOf("mana", (float) ArcanumConfig.BASE_MANA).forGetter(ManaData::mana),
             Codec.INT.optionalFieldOf("attunement", 0).forGetter(ManaData::attunement),
             Identifier.CODEC.listOf().optionalFieldOf("known", List.of()).forGetter(ManaData::known),
-            Identifier.CODEC.optionalFieldOf("selected").forGetter(ManaData::selected)
+            Identifier.CODEC.optionalFieldOf("selected").forGetter(ManaData::selected),
+            Codec.unboundedMap(Identifier.CODEC, Codec.INT)
+                    .optionalFieldOf("casts", Map.of()).forGetter(ManaData::casts)
     ).apply(instance, ManaData::new));
 
     public ManaData withMana(float value) {
-        return new ManaData(value, attunement, known, selected);
+        return new ManaData(value, attunement, known, selected, casts);
     }
 
     public ManaData withAttunement(int value) {
-        return new ManaData(mana, Math.min(ArcanumConfig.MAX_ATTUNEMENT, Math.max(0, value)), known, selected);
+        return new ManaData(mana, Math.min(ArcanumConfig.MAX_ATTUNEMENT, Math.max(0, value)),
+                known, selected, casts);
     }
 
     public ManaData withSelected(Identifier spell) {
-        return new ManaData(mana, attunement, known, Optional.ofNullable(spell));
+        return new ManaData(mana, attunement, known, Optional.ofNullable(spell), casts);
+    }
+
+    /** Сколько раз игрок применял это заклинание. */
+    public int casts(Identifier spell) {
+        return casts.getOrDefault(spell, 0);
+    }
+
+    /** Засчитывает одно применение. */
+    public ManaData recordCast(Identifier spell) {
+        Map<Identifier, Integer> next = new HashMap<>(casts);
+        next.merge(spell, 1, Integer::sum);
+        return new ManaData(mana, attunement, known, selected, Map.copyOf(next));
     }
 
     public boolean knows(Identifier spell) {
@@ -54,7 +75,7 @@ public record ManaData(float mana, int attunement, List<Identifier> known, Optio
         // Первое выученное заклинание сразу становится активным — иначе игрок
         // получает посох, который «ничего не делает».
         Optional<Identifier> sel = selected.isPresent() ? selected : Optional.of(spell);
-        return new ManaData(mana, attunement, List.copyOf(next), sel);
+        return new ManaData(mana, attunement, List.copyOf(next), sel, casts);
     }
 
     public ManaData forget(Identifier spell) {
@@ -64,6 +85,6 @@ public record ManaData(float mana, int attunement, List<Identifier> known, Optio
         List<Identifier> next = new ArrayList<>(known);
         next.remove(spell);
         Optional<Identifier> sel = selected.filter(s -> !s.equals(spell));
-        return new ManaData(mana, attunement, List.copyOf(next), sel);
+        return new ManaData(mana, attunement, List.copyOf(next), sel, casts);
     }
 }

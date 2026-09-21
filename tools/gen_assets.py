@@ -7,7 +7,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from content import (BLOCKS, CAST_TYPES, EFFECTS, ITEMS, SCHOOLS, SCHOOL_NAMES, SPELLS)
+from content import (BLOCKS, CAST_TYPES, EFFECTS, ITEMS, ITEMS_3D, SCHOOLS,
+                     SCHOOL_NAMES, SPELLS)
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 ASSETS = os.path.join(ROOT, "src/main/resources/assets/arcanum")
@@ -31,11 +32,17 @@ def asset(*parts):
 # ----------------------------------------------------------------------
 
 def item_models():
+    """Плоские модели — только тем предметам, у кого нет объёмной.
+
+    Сами объёмные модели пишет tools/gen_models3d.py, но определение
+    предмета (`items/<name>.json`) одинаково для обоих случаев.
+    """
     for name in ITEMS:
-        write(asset("models", "item", name + ".json"), {
-            "parent": "minecraft:item/generated",
-            "textures": {"layer0": f"{NS}:item/{name}"},
-        })
+        if name not in ITEMS_3D:
+            write(asset("models", "item", name + ".json"), {
+                "parent": "minecraft:item/generated",
+                "textures": {"layer0": f"{NS}:item/{name}"},
+            })
         write(asset("items", name + ".json"), {
             "model": {"type": "minecraft:model", "model": f"{NS}:item/{name}"},
         })
@@ -227,6 +234,8 @@ def lang(index):
         "screen.arcanum.stat.tier": ("Ступень посоха", "Wand tier"),
         "screen.arcanum.stat.cost": ("Мана", "Mana"),
         "screen.arcanum.stat.cooldown": ("Перезарядка", "Cooldown"),
+        "screen.arcanum.stat.mastery": ("Мастерство", "Mastery"),
+        "screen.arcanum.stat.progress": ("До следующего", "To next level"),
     }
     for key, names in screen.items():
         out[key] = names[index]
@@ -264,6 +273,8 @@ def lang(index):
                                             "You know no spells yet"),
         "message.arcanum.spell_selected": ("Выбрано: %s", "Selected: %s"),
         "message.arcanum.spell_learned": ("Изучено заклинание: %s", "Spell learned: %s"),
+        "message.arcanum.mastery_up": ("Мастерство выросло: %s %s",
+                                       "Mastery increased: %s %s"),
         "message.arcanum.already_known": ("Вы уже знаете %s", "You already know %s"),
         "message.arcanum.scroll_blank": ("В свитке ничего не записано",
                                          "This scroll is blank"),

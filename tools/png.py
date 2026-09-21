@@ -49,6 +49,26 @@ class Canvas:
             for x in range(x0, x1 + 1):
                 self.set(x, y, color)
 
+    def blit(self, other, x, y):
+        """Копирует другой холст целиком, включая прозрачные пиксели."""
+        for row in range(other.height):
+            for col in range(other.width):
+                target_y = y + row
+                target_x = x + col
+                if 0 <= target_x < self.width and 0 <= target_y < self.height:
+                    self.pixels[target_y][target_x] = other.pixels[row][col]
+
+    def blit_over(self, other, x, y):
+        """Накладывает холст, пропуская прозрачные пиксели."""
+        for row in range(other.height):
+            for col in range(other.width):
+                pixel = other.pixels[row][col]
+                if pixel[3] == 0:
+                    continue
+                target_y, target_x = y + row, x + col
+                if 0 <= target_x < self.width and 0 <= target_y < self.height:
+                    self.pixels[target_y][target_x] = pixel
+
     def save(self, path):
         write_png(path, self.width, self.height, self.pixels)
 

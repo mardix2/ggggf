@@ -2,6 +2,7 @@ package net.arcanum.client;
 
 import net.arcanum.Arcanum;
 import net.arcanum.spell.Spell;
+import net.arcanum.spell.SpellMastery;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -78,6 +79,13 @@ public final class ArcanumHud implements HudElement {
         }
 
         context.drawText(client.textRenderer, spell.displayName(), X, y, spell.school().argb(), true);
+
+        int mastery = ClientSpellState.mastery(spell.id());
+        if (mastery > 0) {
+            int offset = client.textRenderer.getWidth(spell.displayName()) + 4;
+            context.drawText(client.textRenderer, SpellMastery.stars(mastery),
+                    X + offset, y, 0xFFFFD966, true);
+        }
 
         int cooldown = ClientSpellState.cooldown(spell.id());
         if (cooldown > 0) {

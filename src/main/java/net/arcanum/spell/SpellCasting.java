@@ -4,6 +4,7 @@ import net.arcanum.mana.ManaData;
 import net.arcanum.mana.ManaManager;
 import net.arcanum.mana.SpellCooldowns;
 import net.arcanum.registry.ModComponents;
+import net.arcanum.net.ModNetworking;
 import net.arcanum.registry.ModEffects;
 import net.arcanum.spell.util.Fx;
 import net.minecraft.item.ItemStack;
@@ -65,7 +66,9 @@ public final class SpellCasting {
                     String.format("%.1f", SpellCooldowns.remaining(player, spell.id()) / 20.0f));
             case TIER_TOO_LOW -> result.message(spell.tier());
             case NOT_ENOUGH_MANA -> result.message(
-                    Math.round(spell.manaCost() * ManaManager.costMultiplier(player)),
+                    Math.round(spell.manaCost() * ManaManager.costMultiplier(player)
+                            * SpellMastery.costFactor(
+                                    SpellMastery.level(ManaManager.data(player).casts(spell.id())))),
                     (int) ManaManager.current(player));
             case NOT_LEARNED -> result.message(spell.displayName());
             default -> result.message();
@@ -109,13 +112,18 @@ public final class SpellCasting {
             return Result.ON_COOLDOWN;
         }
 
-        float cost = spell.manaCost() * ManaManager.costMultiplier(player);
+        int casts = ManaManager.data(player).casts(spell.id());
+        int mastery = SpellMastery.level(casts);
+
+        float cost = spell.manaCost() * ManaManager.costMultiplier(player)
+                * SpellMastery.costFactor(mastery);
         if (!ManaManager.has(player, cost)) {
             return Result.NOT_ENOUGH_MANA;
         }
 
         ServerWorld world = (ServerWorld) player.getWorld();
-        float power = 1.0f + ManaManager.powerBonus(player, spell.school());
+        float power = 1.0f + ManaManager.powerBonus(player, spell.school())
+                + SpellMastery.powerBonus(mastery);
         SpellContext ctx = new SpellContext(world, player, tool, power, tier);
 
         if (!spell.cast(ctx)) {
@@ -124,10 +132,33 @@ public final class SpellCasting {
         }
 
         ManaManager.consume(player, cost);
-        int cooldown = Math.round(spell.cooldownTicks() * ManaManager.cooldownMultiplier(player));
+        int cooldown = Math.round(spell.cooldownTicks() * ManaManager.cooldownMultiplier(player)
+                * SpellMastery.cooldownFactor(mastery));
         SpellCooldowns.start(player, spell.id(), cooldown);
         Fx.soundVaried(world, player.getPos(), SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 0.5f, 1.2f);
+
+        recordMastery(player, spell, casts, mastery);
         return Result.OK;
+    }
+
+    /**
+     * Засчитывает применение и сообщает игроку о новом уровне мастерства.
+     *
+     * <p>Данные перечитываются заново: {@link ManaManager#consume} уже успел
+     * записать новую ману, и старый снимок её бы затёр.
+     */
+    private static void recordMastery(ServerPlayerEntity player, Spell spell, int casts, int mastery) {
+        ManaManager.set(player, ManaManager.data(player).recordCast(spell.id()));
+        ModNetworking.syncSpells(player);
+
+        int next = SpellMastery.level(casts + 1);
+        if (next <= mastery) {
+            return;
+        }
+        player.sendMessage(Text.translatable("message.arcanum.mastery_up",
+                spell.displayName(), SpellMastery.stars(next)), false);
+        Fx.sound((ServerWorld) player.getWorld(), player.getPos(),
+                SoundEvents.ENTITY_PLAYER_LEVELUP, 0.7f, 1.6f);
     }
 
     /**

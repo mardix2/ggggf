@@ -12,11 +12,13 @@ maven.fabricmc.net и серверы Mojang. Этот скрипт провер�
 import json
 import os
 import re
+import struct
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from content import BLOCKS, EFFECTS, ITEMS, SCHOOLS, SPELLS
+from content import (ANIMATED_BLOCK_TEXTURES, BLOCKS, EFFECTS, ITEMS, ITEMS_3D,
+                     SCHOOLS, SPELLS, SPRITE_ITEMS)
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SRC = os.path.join(ROOT, "src/main/java/net/arcanum")
@@ -146,10 +148,14 @@ def check_registry_matches_content():
 
 
 def check_assets():
+    # Спрайт нужен не каждому предмету: у объёмных моделей его заменяет
+    # геометрия, а текстуры проверяются через сами модели.
     for name in ITEMS:
         expect_file(f"models/item/{name}.json")
         expect_file(f"items/{name}.json")
+    for name in SPRITE_ITEMS:
         expect_file(f"textures/item/{name}.png")
+    expect_file("textures/item/palette.png")
 
     for name, (_ru, _en, kind) in BLOCKS.items():
         expect_file(f"blockstates/{name}.json")
@@ -193,6 +199,108 @@ def check_model_textures():
                 png = os.path.join(ASSETS, "textures", texture + ".png")
                 if not os.path.exists(png):
                     fail(f"{os.path.relpath(path, ROOT)}: нет текстуры {value} (ключ {key})")
+
+
+def check_3d_models():
+    """Структурная проверка объёмных моделей."""
+    if not ITEMS_3D <= set(ITEMS):
+        fail(f"в ITEMS_3D есть неизвестные предметы: {sorted(ITEMS_3D - set(ITEMS))}")
+
+    valid_angles = {-45, -22.5, 0, 22.5, 45}
+    for name in sorted(ITEMS_3D):
+        path = os.path.join(ASSETS, "models", "item", name + ".json")
+        if not os.path.exists(path):
+            continue
+        model = json.loads(read(path))
+        where = f"models/item/{name}.json"
+
+        elements = model.get("elements")
+        if not elements:
+            fail(f"{where}: объёмная модель без элементов")
+            continue
+        if "display" not in model:
+            fail(f"{where}: не задано положение предмета (display)")
+
+        declared = {"#" + key for key in model.get("textures", {})}
+        for index, element in enumerate(elements):
+            start, end = element["from"], element["to"]
+            for axis in range(3):
+                if not -16 <= start[axis] <= 32 or not -16 <= end[axis] <= 32:
+                    fail(f"{where}: элемент {index} выходит за пределы -16..32")
+                if start[axis] >= end[axis]:
+                    fail(f"{where}: элемент {index} вывернут по оси {axis}")
+
+            rotation = element.get("rotation")
+            if rotation is not None:
+                if rotation["angle"] not in valid_angles:
+                    fail(f"{where}: элемент {index} повёрнут на "
+                         f"{rotation['angle']}° — игра такой угол не примет")
+                if rotation["axis"] not in ("x", "y", "z"):
+                    fail(f"{where}: элемент {index} — неизвестная ось поворота")
+
+            for side, face in element["faces"].items():
+                if face["texture"] not in declared:
+                    fail(f"{where}: элемент {index}, грань {side} ссылается на "
+                         f"необъявленную текстуру {face['texture']}")
+                if len(face.get("uv", [])) != 4:
+                    fail(f"{where}: элемент {index}, грань {side} без корректного uv")
+
+
+def check_animations():
+    """Анимированные текстуры: кадры должны быть квадратными и описанными."""
+    expected = set(ANIMATED_BLOCK_TEXTURES)
+    found = set()
+    for folder in ("block", "item"):
+        directory = os.path.join(ASSETS, "textures", folder)
+        if not os.path.isdir(directory):
+            continue
+        for name in sorted(os.listdir(directory)):
+            if not name.endswith(".png.mcmeta"):
+                continue
+            base = name[:-len(".png.mcmeta")]
+            found.add(base)
+            png = os.path.join(directory, base + ".png")
+            if not os.path.exists(png):
+                fail(f"{name}: нет самой текстуры {base}.png")
+                continue
+            width, height = png_size(png)
+            if height % width != 0 or height == width:
+                fail(f"{base}.png: {width}x{height} — это не лента кадров")
+            meta = json.loads(read(os.path.join(directory, name)))
+            if "animation" not in meta:
+                fail(f"{name}: нет блока animation")
+
+    if found != expected:
+        fail(f"список анимаций в content.py разошёлся с файлами: "
+             f"лишние {sorted(found - expected)}, отсутствуют {sorted(expected - found)}")
+
+
+def png_size(path):
+    with open(path, "rb") as handle:
+        header = handle.read(24)
+    return struct.unpack(">II", header[16:24])
+
+
+def check_orphan_textures():
+    """Текстуры, на которые никто не ссылается, — мусор в сборке."""
+    referenced = set()
+    for dirpath, _dirs, files in os.walk(os.path.join(ASSETS, "models")):
+        for name in files:
+            if not name.endswith(".json"):
+                continue
+            model = json.loads(read(os.path.join(dirpath, name)))
+            for value in (model.get("textures") or {}).values():
+                if isinstance(value, str) and value.startswith("arcanum:"):
+                    referenced.add(value.split(":", 1)[1])
+
+    for folder in ("item", "block"):
+        directory = os.path.join(ASSETS, "textures", folder)
+        for name in sorted(os.listdir(directory)):
+            if not name.endswith(".png"):
+                continue
+            key = f"{folder}/{name[:-4]}"
+            if key not in referenced:
+                fail(f"текстура {key}.png никем не используется")
 
 
 def check_lang():
@@ -340,6 +448,9 @@ def main():
     check_registry_matches_content()
     check_assets()
     check_model_textures()
+    check_3d_models()
+    check_animations()
+    check_orphan_textures()
     check_lang()
     check_data_items()
     check_infusion_recipes()
@@ -348,8 +459,9 @@ def main():
     check_advancements()
 
     print(f"Проверено JSON-файлов: {parsed}")
-    print(f"Предметов: {len(ITEMS)}, блоков: {len(BLOCKS)}, "
-          f"заклинаний: {len(SPELLS)}, эффектов: {len(EFFECTS)}")
+    print(f"Предметов: {len(ITEMS)} (объёмных моделей: {len(ITEMS_3D)}), "
+          f"блоков: {len(BLOCKS)}, заклинаний: {len(SPELLS)}, "
+          f"эффектов: {len(EFFECTS)}, анимаций: {len(ANIMATED_BLOCK_TEXTURES)}")
     if problems:
         print(f"\nНайдено проблем: {len(problems)}")
         for problem in problems:

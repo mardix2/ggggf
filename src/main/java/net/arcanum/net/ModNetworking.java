@@ -75,7 +75,8 @@ public final class ModNetworking {
 
     public static void syncSpells(ServerPlayerEntity player) {
         ManaData data = ManaManager.data(player);
-        ServerPlayNetworking.send(player, new KnownSpellsPayload(data.known(), data.selected()));
+        ServerPlayNetworking.send(player,
+                new KnownSpellsPayload(data.known(), data.selected(), data.casts()));
     }
 
     public static void syncCooldown(ServerPlayerEntity player, Identifier spell, int ticks) {

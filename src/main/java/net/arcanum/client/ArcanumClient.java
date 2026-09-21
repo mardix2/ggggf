@@ -58,7 +58,8 @@ public class ArcanumClient implements ClientModInitializer {
                 context.client().execute(() -> ClientSpellState.setMana(payload.mana(), payload.max())));
 
         ClientPlayNetworking.registerGlobalReceiver(KnownSpellsPayload.ID, (payload, context) ->
-                context.client().execute(() -> ClientSpellState.setSpells(payload.known(), payload.selected())));
+                context.client().execute(() ->
+                        ClientSpellState.setSpells(payload.known(), payload.selected(), payload.casts())));
 
         ClientPlayNetworking.registerGlobalReceiver(CooldownPayload.ID, (payload, context) ->
                 context.client().execute(() -> ClientSpellState.startCooldown(payload.spell(), payload.ticks())));
