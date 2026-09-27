@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ARA",
+    "RMR",
+    "ARA"
+  ],
+  "key": {
+    "A": "ironman:gold_titanium_alloy",
+    "R": "minecraft:redstone_block",
+    "M": "ironman:arc_reactor_mk1"
+  },
+  "result": {
+    "id": "ironman:arc_reactor_mk2",
+    "count": 1
+  }
+}

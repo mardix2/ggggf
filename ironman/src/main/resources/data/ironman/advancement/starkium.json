@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "ironman:starkium_arc_reactor"
+    },
+    "title": {
+      "translate": "advancements.ironman.starkium.title"
+    },
+    "description": {
+      "translate": "advancements.ironman.starkium.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "reactor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ironman:starkium_arc_reactor"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "ironman:mark_iii"
+}

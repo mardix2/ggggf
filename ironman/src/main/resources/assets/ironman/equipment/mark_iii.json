@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "ironman:mark_iii"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "ironman:mark_iii"
+      }
+    ]
+  }
+}

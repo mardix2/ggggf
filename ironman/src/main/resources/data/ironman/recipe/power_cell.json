@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NRN",
+    "NPN",
+    "NRN"
+  ],
+  "key": {
+    "N": "minecraft:iron_nugget",
+    "R": "minecraft:redstone",
+    "P": "ironman:palladium_ingot"
+  },
+  "result": {
+    "id": "ironman:power_cell",
+    "count": 2
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "I I",
+    "T T"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "T": "ironman:jet_thruster"
+  },
+  "result": {
+    "id": "ironman:mark_i_boots",
+    "count": 1
+  }
+}

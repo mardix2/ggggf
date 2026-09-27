@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "ironman:arc_reactor_mk1"
+    },
+    "title": {
+      "translate": "advancements.ironman.arc_reactor.title"
+    },
+    "description": {
+      "translate": "advancements.ironman.arc_reactor.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "reactor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ironman:arc_reactor_mk1"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "ironman:root"
+}

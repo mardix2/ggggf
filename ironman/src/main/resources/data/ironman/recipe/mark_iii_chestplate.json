@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "R R",
+    "AMA",
+    "AAA"
+  ],
+  "key": {
+    "A": "ironman:gold_titanium_alloy",
+    "R": "ironman:repulsor_node",
+    "M": "ironman:mark_i_chestplate"
+  },
+  "result": {
+    "id": "ironman:mark_iii_chestplate",
+    "count": 1
+  }
+}

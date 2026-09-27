@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "ironman",
+  "version": "${version}",
+  "name": "Iron Man: Stark Industries",
+  "description": "Станьте Железным человеком: три модели костюма (Mark I, Mark III, Mark 85), дуговой реактор, полёт с реактивным рывком, репульсоры, юнибим, самонаводящиеся микроракеты и HUD Джарвиса.",
+  "authors": [
+    "Stark Industries"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/ironman/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.ironman.IronMan"
+    ],
+    "client": [
+      "net.ironman.client.IronManClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "A A",
+    "T T"
+  ],
+  "key": {
+    "A": "ironman:gold_titanium_alloy",
+    "T": "ironman:jet_thruster"
+  },
+  "result": {
+    "id": "ironman:mark_iii_boots",
+    "count": 1
+  }
+}

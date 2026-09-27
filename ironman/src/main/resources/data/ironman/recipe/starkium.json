@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "APA",
+    "PDP",
+    "APA"
+  ],
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "P": "ironman:palladium_ingot",
+    "D": "minecraft:diamond"
+  },
+  "result": {
+    "id": "ironman:starkium",
+    "count": 2
+  }
+}

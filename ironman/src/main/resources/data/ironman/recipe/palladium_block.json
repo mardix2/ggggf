@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PPP",
+    "PPP"
+  ],
+  "key": {
+    "P": "ironman:palladium_ingot"
+  },
+  "result": {
+    "id": "ironman:palladium_block",
+    "count": 1
+  }
+}

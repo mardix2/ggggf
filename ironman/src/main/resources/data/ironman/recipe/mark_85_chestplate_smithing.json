@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": "minecraft:netherite_upgrade_smithing_template",
+  "base": "ironman:mark_iii_chestplate",
+  "addition": "ironman:nanotech_core",
+  "result": {
+    "id": "ironman:mark_85_chestplate"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "display": {
+    "icon": {
+      "id": "ironman:mark_iii_helmet"
+    },
+    "title": {
+      "translate": "advancements.ironman.mark_iii.title"
+    },
+    "description": {
+      "translate": "advancements.ironman.mark_iii.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ironman:mark_iii_helmet"
+          }
+        ]
+      }
+    },
+    "chestplate": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ironman:mark_iii_chestplate"
+          }
+        ]
+      }
+    },
+    "leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ironman:mark_iii_leggings"
+          }
+        ]
+      }
+    },
+    "boots": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ironman:mark_iii_boots"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "ironman:mark_i",
+  "requirements": [
+    [
+      "helmet"
+    ],
+    [
+      "chestplate"
+    ],
+    [
+      "leggings"
+    ],
+    [
+      "boots"
+    ]
+  ]
+}

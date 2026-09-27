@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RSR",
+    "SNS",
+    "RSR"
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "S": "ironman:starkium",
+    "N": "minecraft:netherite_ingot"
+  },
+  "result": {
+    "id": "ironman:nanotech_core",
+    "count": 1
+  }
+}

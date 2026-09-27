@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:iron_ingot",
+    "minecraft:gunpowder",
+    "minecraft:gunpowder",
+    "ironman:palladium_ingot"
+  ],
+  "result": {
+    "id": "ironman:micro_missile",
+    "count": 8
+  }
+}

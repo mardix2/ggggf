@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "III",
+    "IPI",
+    "I I"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "P": "ironman:palladium_ingot"
+  },
+  "result": {
+    "id": "ironman:mark_i_leggings",
+    "count": 1
+  }
+}

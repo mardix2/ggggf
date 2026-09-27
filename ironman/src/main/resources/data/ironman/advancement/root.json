@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "id": "ironman:raw_palladium"
+    },
+    "title": {
+      "translate": "advancements.ironman.root.title"
+    },
+    "description": {
+      "translate": "advancements.ironman.root.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "ironman:block/palladium_block"
+  },
+  "criteria": {
+    "palladium": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ironman:raw_palladium"
+          }
+        ]
+      }
+    }
+  }
+}
